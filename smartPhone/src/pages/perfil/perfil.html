@@ -1,0 +1,49 @@
+<ion-header>
+    <ion-navbar color="navbar">
+        <button ion-button menuToggle>
+            <ion-icon name="menu" class="icon-menu"></ion-icon>
+        </button>
+        <ion-title>
+            Perfil
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content text-center padding >
+    <div  class="pageEnter" *ngIf="user">
+        <div  padding-left padding-right>
+            <img width="50%" padding-left padding-right src="assets/imgs/user.png">
+        </div>
+        <h4>
+            {{user.username}}
+        </h4>
+        <ion-list>
+            <ion-item id="perfil-list-item-container13">
+                <div id="perfil-markdown18" style="text-align:center;" class="show-list-numbers-and-dots">
+                    <p style="margin-top:0px;color:#877979;">
+                        <b>Primer ingreso en la aplicación:</b>
+                        <em> {{instalationDate | date:'yyyy/MM/dd'}}
+                        </em>
+                    </p>
+                </div>
+            </ion-item>
+            <ion-item id="perfil-list-item-container13">
+                <div id="perfil-markdown18" style="text-align:center;" class="show-list-numbers-and-dots">
+                    <p style="margin-top:0px;color:#877979;">
+                        <b>Formularios Enviados:</b> {{ sentForms }}
+                    </p>
+                </div>
+            </ion-item>
+            <ion-item id="perfil-list-item-container13">
+                <div id="perfil-markdown18" style="text-align:center;" class="show-list-numbers-and-dots">
+                    <p style="margin-top:0px;color:#877979;">
+                        <b>Formularios realizados:</b> {{ pendingForms }}
+                    </p>
+                </div>
+            </ion-item>
+        </ion-list>
+    </div>
+    <div class="pageEnter"  padding *ngIf="!user">
+        <h4>No existen credenciales</h4>
+        <p>No has iniciado Sesion</p>
+    </div>
+</ion-content>

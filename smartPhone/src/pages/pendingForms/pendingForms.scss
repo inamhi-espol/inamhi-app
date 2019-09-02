@@ -1,0 +1,27 @@
+page-pendingForms {
+	.strongLabel {
+		font-weight:bold;
+		color:#686868
+	}
+	.strongLabelError {
+		font-weight:bold;
+		color:#c44c3e;
+	}
+	.empty_number, .bugs_number{
+		text-align: center;
+	}
+	.edit-button{
+		color: #2b3542;
+		background-color: #ffffff;
+	}
+	.edit-button-icon{
+		color: #2b3542;
+	}
+	.delete-button{
+    color: #c44c3e;
+    background-color: #ffffff;
+  }
+	.icon-trash{
+		color: #c44c3e;
+	}
+}

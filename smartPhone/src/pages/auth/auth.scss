@@ -1,0 +1,16 @@
+page-auth {
+    img {
+        max-height:150px;
+        max-width:150px;
+    }
+    .btn-login{
+      box-shadow: none !important;
+    }
+    .btn-unlink{
+      color: #2b3542 !important;
+      background-color: #ffffff !important;
+      box-shadow: none !important;
+      border: 1px solid #2b3542 !important;
+    }
+    $text-input-md-show-focus-highlight:false;
+}

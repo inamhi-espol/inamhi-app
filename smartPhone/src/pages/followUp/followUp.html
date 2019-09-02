@@ -1,0 +1,16 @@
+<ion-header>
+    <ion-navbar color="navbar">
+        <ion-title>
+            Formularios de seguimiento
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content padding text-center>
+  <ion-list>
+      <ion-item-divider *ngFor="let form of initialForms;" (click)="selectInterviewedClick(form)">
+          <ion-label>
+              {{ form.code }}
+          </ion-label>
+      </ion-item-divider>
+  </ion-list>
+</ion-content>

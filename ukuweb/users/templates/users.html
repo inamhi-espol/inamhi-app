@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}INSAVIT{% endblock %}
+{% block extraStyle %}
+<link rel="stylesheet" href="{% static 'css/users.css' %}">
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"> -->
+<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+<!-- Bootstrap core CSS -->
+<link href="{% static 'css/table/bootstrap.min.css' %}" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="{% static 'css/table/mdb.min.css' %}" rel="stylesheet">
+<!-- Your custom styles (optional) -->
+<link href="{% static 'css/table/style.css' %}" rel="stylesheet">
+<!-- MDBootstrap Datatables  -->
+<link href="{% static 'css/table/addons/datatables.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div id="done_forms">
+  <h3>Usuarios</h3>
+  <div class="add-user">
+    <a class="button default" href="{% url 'create-user-view' %}">Agregar usuario</a>
+  </div>
+  <div class="table-responsive">
+    <table id="dtBasicExample" class="dtBasicExample table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Nombre de usuario</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for interviewer in interviewers %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ interviewer.name }}</td>
+          <td>{{ interviewer.last_name }}</td>
+          <td>{{ interviewer.user.username }}</td>
+          <td><a href="{% url 'view-user' interviewer.uid %}">Ver</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block extraScripts %}
+<script type="text/javascript" src="{% static 'js/table/jquery-3.4.1.min.js' %}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="{% static 'js/table/popper.min.js' %}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="{% static 'js/table/bootstrap.min.js' %}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="{% static 'js/table/mdb.min.js' %}"></script>
+<!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="{% static 'js/table/addons/datatables.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}INSAVIT{% endblock %}
+{% block extraStyle %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <h2>Editar Plantilla</h2>
+  <form action="{% url 'edit-template' uid %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="form_name">Nombre del formulario</label>
+      <input type="text" class="form-control" id="form_name" name="form_name" value="{{ form_name }}">
+    </div>
+    <div class="form-group">
+      <label for="type">Tipo de formulario</label>
+      <select name="type" class="form-control">
+        {% for type in template_types %}
+        {% if type.code == type_selected %}
+        <option value="{{type.code}}" selected>{{type.name}}</option>
+        {% else %}
+        <option value="{{type.code}}">{{type.name}}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="file">Seleccione un archivo</label>
+      <input type="file" class="form-control" id="file" name="file" value="" accept=".json" required>
+    </div>
+    <div class="form-group">
+      <label for="quantity" required>Cantidad</label>
+      <input type="number" class="form-control" id="quantity" name="quantity" value="{{ quantity }}">
+    </div>
+    <div class="form-group">
+      <label for="gps">Requiere GPS</label>
+      {% if require_gps %}
+      <input type="checkbox" id="gps" name="gps" value="true" checked>
+      {% else %}
+      <input type="checkbox" id="gps" name="gps" value="true">
+      {% endif %}
+    </div>
+    <a href="{% url 'templates' %}" class="button cancel">Cancelar</a>
+    <button type="submit" class="btn btn-success">Editar</button>
+    <a href="{% url 'delete-template' uid %}" onclick="return confirm('¿Seguro que deseas eliminar la plantilla?');"  class="button danger right">Eliminar</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+// http://ionicframework.com/docs/theming/
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+$select-md-placeholder-color: black !important;
+$popover-md-width: 700px !important;
+
+.item-inner {
+	border:0px;
+}
+.item-md.item-block .item-inner {
+	border:none;
+}
+button:focus {
+	outline:none;
+}
+a {
+	outline:none!important;
+	text-decoration: none!important;
+}
+.alert-radio-label {
+	white-space: normal!important
+}
+ion-label{
+	white-space: normal!important;
+	color: #333333;
+}
+ion-icon{
+	color: #ffffff;
+}
+.icon-menu, .icon-close, .icon-send{
+	color: #ffffff;
+}
+.scroll-content {
+    padding-bottom: 0!important;
+}
+.toast-wrapper {
+    background-color: rgba(165, 64, 53,0.9)!important
+}
+.popover-content{
+    width: 700px !important;
+    top: 200px !important;
+    left: 50px !important;
+    max-height: 70% !important;
+}
+.button-md {
+	background-color: #2b3542;
+	font-size: 11px;
+}
+
+.menu-items{
+	border-bottom: 1px solid #2b3542;
+}
+
+.menu-items:hover{
+	background-color: #516f84;
+}
+
+.test3-open{
+	background-color: #516f84;
+}
+.label-menu{
+	color: #2b3542;
+}
+.back-button-icon-md {
+	color: #ffffff !important;
+}
+.rounded-edges{
+	border-radius: 25px;
+}

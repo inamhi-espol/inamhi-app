@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}INSAVIT{% endblock %}
+{% block extraStyle %}
+<link rel="stylesheet" href="{% static 'css/templates.css' %}">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+<!-- Bootstrap core CSS -->
+<link href="{% static 'css/table/bootstrap.min.css' %}" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="{% static 'css/table/mdb.min.css' %}" rel="stylesheet">
+<!-- Your custom styles (optional) -->
+<link href="{% static 'css/table/style.css' %}" rel="stylesheet">
+<!-- MDBootstrap Datatables  -->
+<link href="{% static 'css/table/addons/datatables.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div id="done_forms">
+  <h3>Plantillas creadas</h3>
+  <div class="add-template">
+    <a class="button default" href="{% url 'create-template-view' %}">Agregar plantilla</a>
+  </div>
+  <div>
+    <div class="table-responsive">
+      <table id="dtBasicExample" class="dtBasicExample table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Cantidad</th>
+            <th>GPS</th>
+            <th>Tipo</th>
+            <th>Nombre del conjunto de datos</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for template in templates %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ template.name }}</td>
+            <td>{{ template.quantity }}</td>
+            <td>{% if template.gps %}
+              <i class="fa fa-check" style="color: green; padding-left: 9px;"></i>
+              {% else %}
+              <i style="color: red; padding-left: 10px;" class="fa">&#xf00d;</i>
+              {% endif %}
+            </td>
+            <td>{{ template.type.name }}</td>
+            <td>{{ template.set_name }}</td>
+            <td><a href="{% url 'view-template' template.uid %}">Ver</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <hr>
+</div>
+{% endblock %}
+{% block extraScripts %}
+<script type="text/javascript" src="{% static 'js/table/jquery-3.4.1.min.js' %}"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="{% static 'js/table/popper.min.js' %}"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="{% static 'js/table/bootstrap.min.js' %}"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="{% static 'js/table/mdb.min.js' %}"></script>
+<!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="{% static 'js/table/addons/datatables.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}INSAVIT{% endblock %}
+{% block extraStyle %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <h2>Editar Usuario</h2>
+  <form action="{% url 'edit-user' uid %}" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="username">Nombre de usuario</label>
+      <input type="text" class="form-control" id="username" name="username" value="{{ username }}">
+    </div>
+    <div class="form-group">
+      <label for="name">Nombre</label>
+      <input type="text" class="form-control" id="name" name="name" value="{{ name }}">
+    </div>
+    <div class="form-group">
+      <label for="last_name">Apellido:</label>
+      <input type="text" class="form-control" id="last_name" name="last_name" value="{{ last_name }}">
+    </div>
+    <a href="{% url 'users' %}" class="button cancel">Cancelar</a>
+    <button type="submit" class="btn btn-success">Editar</button>
+    <a href="{% url 'delete-user' uid %}" onclick="return confirm('¿Seguro que deseas eliminar el usuario?');"  class="button danger right">Eliminar</a>
+  </form>
+</div>
+{% endblock %}

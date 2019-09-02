@@ -1,0 +1,76 @@
+<ion-header>
+    <ion-navbar color="navbar">
+        <button ion-button menuToggle>
+            <ion-icon name="menu" class="icon-menu"></ion-icon>
+        </button>
+        <ion-title>
+            Principal
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding text-center>
+    <div padding>
+        <ion-card *ngFor="let template of infoTemplates;let i = index">
+            <ion-card-header>
+                <ion-card-title>{{ template.name }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content *ngIf="template.type == 'SIMPLE'">
+                <ion-list>
+                    <ion-item>
+                        <ion-label>REALIZADAS</ion-label>
+                        <ion-label slot="end" class="label-rigth">{{ template.done_quantity }}</ion-label>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>POR REALIZAR</ion-label>
+                        <ion-label slot="end" class="label-rigth">{{ template.remain_quantity }}</ion-label>
+                    </ion-item>
+                </ion-list>
+                <button *ngIf="template.remain_quantity != 0" ion-button size="small" (click)="startForm(template, template.type, i)">Empezar</button>
+            </ion-card-content>
+
+            <ion-card-content *ngIf="template.type == 'COMPUESTA'">
+                <ion-item align-self-center col-12>
+                    <ion-select col-12 style="padding-left:0;" okText=ACEPTAR cancelText=CANCELAR [(ngModel)]="select_tipo_compuesta" placeholder="TIPO DE ENCUESTA">
+                        <ion-option *ngFor="let type of template.quantity" value={{type.type}}>{{ getType(type) }}</ion-option>
+                    </ion-select>
+                </ion-item>
+                <ion-list>
+                    <ion-item>
+                        <ion-label col-9 style="padding-left:0;">REALIZADAS</ion-label>
+                        <ion-label col-3 slot="end" *ngIf="select_tipo_compuesta">{{ getQuantities(template, select_tipo_compuesta, "done") }}</ion-label>
+                        <ion-label col-3 slot="end" *ngIf="!select_tipo_compuesta"></ion-label>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label col-9 style="padding-left:0;">POR REALIZAR</ion-label>
+                        <ion-label col-3 slot="end" *ngIf="select_tipo_compuesta">{{ getQuantities(template, select_tipo_compuesta, "remain") }}</ion-label>
+                        <ion-label col-3 slot="end" *ngIf="!select_tipo_compuesta"></ion-label>
+                    </ion-item>
+                </ion-list>
+                <button [disabled]="!select_tipo_compuesta" ion-button size="small" (click)="startForm(template, select_tipo_compuesta, i)">Empezar</button>
+            </ion-card-content>
+
+            <ion-card-content *ngIf="template.type == 'MULTIFORM'">
+                <ion-item align-self-center col-12>
+                    <ion-select col-12 style="padding-left:0;" okText=ACEPTAR cancelText=CANCELAR [(ngModel)]="select_tipo_multiform" placeholder="TIPO DE ENCUESTA">
+                        <ion-option *ngFor="let type of template.quantity" value={{type.type}}>{{type.type}}</ion-option>
+                    </ion-select>
+                </ion-item>
+                <ion-list>
+                    <ion-item>
+                        <ion-label col-9 style="padding-left:0;">REALIZADAS</ion-label>
+                        <ion-label col-3 slot="end" *ngIf="select_tipo_multiform">{{ getQuantities(template, select_tipo_multiform, "done") }}</ion-label>
+                        <ion-label col-3 slot="end" *ngIf="!select_tipo_multiform"></ion-label>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label col-9 style="padding-left:0;">POR REALIZAR</ion-label>
+                        <ion-label col-3 slot="end" *ngIf="select_tipo_multiform">{{ getQuantities(template, select_tipo_multiform, "remain") }}</ion-label>
+                        <ion-label col-3 slot="end" *ngIf="!select_tipo_multiform"></ion-label>
+                    </ion-item>
+                </ion-list>
+                <button [disabled]="!select_tipo_multiform" ion-button size="small" (click)="startForm(template, select_tipo_multiform, i)">Empezar</button>
+            </ion-card-content>
+
+        </ion-card>
+    </div>
+</ion-content>
