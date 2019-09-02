@@ -143,7 +143,4 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
 FORMS_ROOT = str(os.path.join(STATIC_ROOT, "forms"))
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [
-    str(os.path.join(BASE_DIR, "static")),
-    str(os.path.join(BASE_DIR, "assets")),
-]
+STATICFILES_DIRS = [str(os.path.join(BASE_DIR, "static"))]
