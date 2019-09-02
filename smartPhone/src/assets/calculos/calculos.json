@@ -1,0 +1,128 @@
+{
+    "calculos": [
+        {
+            "name":"validateEmptyInput",
+            "structure":"function validateEmptyInput(item1){if(item1.value==''){item1.error='ESTA PREGUNTA ES OBLIGATORIA';return 1;}else{item1.error='';return 0;}}"
+        },
+        {
+            "name":"validateLengthInput",
+            "structure":"function validateLengthInput(item1){if(item1.value!='' && item1.value.length<=5){item1.error='EL STRING DEBE TENER MÁS DE 5 CARACTERES';return 1;}return 0;}"
+        },
+        {
+            "name":"validateNegativeInputNumber",
+            "structure":"function validateNegativeInputNumber(item1){if(item1.value!=''){var numero=parseFloat(item1.value);if(isNaN(numero)){item1.error='EL VALOR QUE INGRESÓ NO ES UN NÚMERO';return 1;}else if((!isNaN(numero))&&(numero >= 0)){item1.error='';return 0;}else if((!isNaN(numero))&&(numero < 0)){item1.error='INGRESE UN NÚMERO VÁLIDO';return 1;}}return 0;}"
+        },
+        {
+            "name":"validateEmptyRadioInput",
+            "structure":"function validateEmptyRadioInput(item1){if(item1.show && item1.value==''){item1.error='ESTA PREGUNTA ES OBLIGATORIA';return 1;}else{item1.error='';return 0;}}"
+        },
+        {
+            "name":"validateEmptyRadioInputOthers",
+            "structure":"function validateEmptyRadioInputOthers(item1){if(item1.show && item1.value=='' && item1.children[item1.children.length-1].value==''){item1.error='ESTA PREGUNTA ES OBLIGATORIA';return 1;}else{item1.error='';return 0;}}"
+        },
+        {
+            "name":"validateDayHour",
+            "structure":"function validateDayHour(item1){if(item1.value!=''){var numero=parseFloat(item1.value);if(isNaN(numero)){item1.error='EL VALOR QUE INGRESÓ NO ES UN NÚMERO';return 1;}else{if(numero>=0 && numero<=24){item1.error='';return 0;}else{item1.error='INGRESE UN NÚMERO VÁLIDO';return 1;}}}else{item1.error='';}return 0;}"
+        },
+        {
+            "name":"validateDayMinute",
+            "structure":"function validateDayMinute(item1){if(item1.value!=''){var numero=parseFloat(item1.value);if(isNaN(numero)){item1.error='EL VALOR QUE INGRESÓ NO ES UN NÚMERO';return 1;}else{if(numero>=0 && numero<=1440){item1.error='';return 0;}else{item1.error='INGRESE UN NÚMERO VÁLIDO';return 1;}}}else{item1.error='';}return 0;}"
+        },
+        {
+            "name":"validateWeekDay",
+            "structure":"function validateWeekDay(item1){if(item1.value!=''){var numero=parseFloat(item1.value);if(isNaN(numero)){item1.error='EL VALOR QUE INGRESÓ NO ES UN NÚMERO';return 1;}else{if(numero>=0 && numero<=7){item1.error='';return 0;}else{item1.error='INGRESE UN NÚMERO VÁLIDO';return 1;}}}else{item1.error='';}return 0;}"
+        },
+        {
+            "name":"validateEmptyNumberCheckbox",
+            "structure":"function validateEmptyNumberCheckbox(item1){if(item1.children.length==2){if(item1.show && item1.children[0].checked==false && item1.children[1].value==''){item1.error='ESTA PREGUNTA ES OBLIGATORIA';return 1;}else{item1.error='';}}else{if(item1.show && item1.children[0].checked==false && item1.children[1].value=='' && item1.children[2].value==''){item1.error='ESTA PREGUNTA ES OBLIGATORIA';return 1;}else{item1.error='';}}return 0;}"
+        },
+        {
+            "name":"validateEmptyRadioTitle",
+            "structure":"function validateEmptyRadioTitle(item1){var err1=0;var err2=0;if(item1.show && item1.children[0].value==''){item1.children[0].error='ESTA PREGUNTA ES OBLIGATORIA';err1=1;}else if(item1.show && item1.children[0].value!=''){item1.children[0].error='';err1=0;}else if(item1.show && item1.children[1].value==''){item1.children[1].error='ESTA PREGUNTA ES OBLIGATORIA';err2=1;}else if(item1.show && item1.children[1].value!=''){item1.children[1].error='';err2=0;}return err1 || err2;}"
+        },
+        {
+            "name":"validateEmptyRadio",
+            "structure":"function validateEmptyRadio(item1){if(item1.show && item1.value==''){item1.error='ESTA PREGUNTA ES OBLIGATORIA';return 1;}else{item1.error='';return 0;}return 0;}"
+        },
+        {
+            "name":"termometroSeco",
+            "structure":"function termometroSeco(item1,item2){var array=(item1.value).split('.');if(array.length!=2 || (array[1]).length!=1){item1.error='EL VALOR DEBE TENER UN DECIMAL';return 1;}var valor=parseFloat(item1.value);if(valor<0 || valor>24){item1.error='EL VALOR DEBE ESTAR ENTRE 0 Y 24';return 1;}else{if(item2.value!=''){var valor2=parseFloat(item2.value);if(valor<valor2){item1.error='EL VALOR DEL TERMÓMETRO SECO DEBE SER MAYOR O IGUAL AL VALOR DEL TERMÓMETRO HÚMEDO';return 1;}}}item1.error='';return 0;}"
+        },
+        {
+            "name":"termometroHumedo",
+            "structure":"function termometroHumedo(item1,item2){var array=(item1.value).split('.');if(array.length!=2 || (array[1]).length!=1){item1.error='EL VALOR DEBE TENER UN DECIMAL';return 1;}var valor=parseFloat(item1.value);if(valor<=-1 || valor>=20){item1.error='EL VALOR DEBE ESTAR ENTRE -1 Y 20';return 1;}else{if(item2.value!=''){var valor2=parseFloat(item2.value);if(valor>valor2){item1.error='EL VALOR DEL TERMÓMETRO HÚMEDO DEBE SER MENOR O IGUAL AL VALOR DEL TERMÓMETRO SECO';return 1;}}}item1.error='';return 0;}"
+        },
+        {
+            "name":"calcularPsicrometro",
+            "structure":"function calcularPsicrometro(item1,item2,item3,item4,item5){if(item1.value!='' && item2.value!=''){item3.value=(parseFloat(item1.value)-parseFloat(item2.value)).toFixed(2);item4.value=(parseFloat(item1.value)*parseFloat(item2.value)).toFixed(2);item5.value=(parseFloat(item4.value)-parseFloat(item3.value)).toFixed(2);if(parseFloat(item4.value)>=30){item4.error='EL VALOR DEBE SER MENOR A 30. MODIFIQUE EL VALOR DE TERMÓMETRO SECO O TERMÓMETRO HÚMEDO';return 1;}else{item4.error='';}if(parseFloat(item5.value)>=40){item5.error='EL VALOR DEBE SER MENOR A 30. MODIFIQUE EL VALOR DE TERMÓMETRO SECO O TERMÓMETRO HÚMEDO';return 1;}else{item5.error='';}return 0;}}"
+        },
+        {
+            "name":"validateOneDecimal",
+            "structure":"function validateOneDecimal(item1){if(item1.value!=''){var array=(item1.value).split('.');if(array.length!=2 || (array[1]).length!=1){item1.error='EL VALOR DEBE TENER UN DECIMAL';return 1;}item1.error='';return 0;}}"
+        },
+        {
+            "name":"validateTwoDecimal",
+            "structure":"function validateTwoDecimal(item1){if(item1.value!=''){var array=(item1.value).split('.');if(array.length!=2 || (array[1]).length!=2){item1.error='EL VALOR DEBE SER UN DECIMAL DE DOBLE PRECISIÓN';return 1;}item1.error='';return 0;}}"
+        },
+        {
+            "name":"velocidadViento",
+            "structure":"function velocidadViento(item1){if(item1.value!=''){var array=(item1.value).split('.');if(array.length!=2 || (array[1]).length!=1){item1.error='EL VALOR DEBE TENER UN DECIMAL';return 1;}var valor=parseFloat(item1.value);if(valor<0 || valor>20){item1.error='EL VALOR DEBE ESTAR ENTRE 0 Y 20';return 1;}item1.error='';}return 0;}"
+        },
+        {
+            "name":"visibilidadHorizontal",
+            "structure":"function visibilidadHorizontal(item1){if(item1.value!=''){var array=(item1.value).split('.');if(array.length!=2 || (array[1]).length!=2){item1.error='EL VALOR DEBE SER UN DECIMAL DE DOBLE PRECISIÓN';return 1;}var valor=parseFloat(item1.value);if(valor<-20 || valor>0){item1.error='EL VALOR DEBE ESTAR ENTRE -20 Y 0';return 1;}item1.error='';}return 0;}"
+        },
+        {
+            "name":"temperaturaMaxima",
+            "structure":"function temperaturaMaxima(item1){if(item1.value!=''){var valor=parseFloat(item1.value);if(valor<7 || valor>30){item1.error='EL VALOR DEBE ESTAR ENTRE 7 Y 30';return 1;}item1.error='';return 0;}}"
+        },
+        {
+            "name":"temperaturaMinima",
+            "structure":"function temperaturaMinima(item1){if(item1.value!=''){var valor=parseFloat(item1.value);if(valor<-6 || valor>13){item1.error='EL VALOR DEBE ESTAR ENTRE -6 Y 13';return 1;}item1.error='';return 0;}}"
+        },
+        {
+            "name":"calcularNudos",
+            "structure":"function calcularNudos(item1,item2){if(item1.value!=''){var array=(item1.value).split('.');if(array.length!=2 || (array[1]).length!=1){item1.error='EL VALOR DEBE TENER UN DECIMAL';item2.value='';return 1;}item1.error='';item2.value=(parseFloat(item1.value)/2).toFixed(2);return 0;}item1.error='';item2.value='';return 0;}"
+        },
+        {
+            "name":"calcularPrecipitacion",
+            "structure":"function calcularPrecipitacion(item1,item2){if(item1.value!=''){var array=(item1.value).split('.');if(array.length!=2 || (array[1]).length!=1){item1.error='EL VALOR DEBE TENER UN DECIMAL';item2.value='';return 1;}item1.error='';item2.value=((parseFloat(item1.value)+parseFloat(item1.value))/2).toFixed(2);return 0;}item1.error='';item2.value='';return 0;}"
+        },
+        {
+            "name":"calcularEvaporacion",
+            "structure":"function calcularEvaporacion(item1,item2,item3,item4){var err=0;if(item1.value!=''){var array=(item1.value).split('.');if(array.length!=2 || (array[1]).length!=2){item1.error='EL VALOR DEBE SER UN DECIMAL DE DOBLE PRECISIÓN';err=1;item4.value='';item4.error='';}else{item1.error='';}}else{item1.error='';}if(item2.value!=''){var array=(item2.value).split('.');if(array.length!=2 || (array[1]).length!=2){item2.error='EL VALOR DEBE SER UN DECIMAL DE DOBLE PRECISIÓN';err=1;item4.value='';item4.error='';}else{item2.error='';}}else{item2.error='';}if(item3.value!=''){var array=(item3.value).split('.');if(array.length!=2 || (array[1]).length!=2){item3.error='EL VALOR DEBE SER UN DECIMAL DE DOBLE PRECISIÓN';err=1;item4.value='';item4.error='';}else{item3.error='';}}else{item3.error='';}if(item1.value=='' || item2.value=='' || item3.value==''){item4.value='';item4.error='';}if(item1.value!='' && item2.value!='' && item3.value!='' && item1.error=='' && item2.error=='' && item3.error==''){item4.value=(parseFloat(item1.value)+parseFloat(item2.value)-parseFloat(item3.value)).toFixed(2);if(parseFloat(item4.value)<=10){item4.error='EL VALOR DEBE SER MAYOR A 10';return 1;}item4.error='';return 0;}return err;}"
+        },
+        {
+            "name":"resultado",
+            "structure":"function resultado(item1,item2,item3){if(item1.value!='' && item1.error=='' && item2.value!=''&& item2.error==''){item3.value=(parseFloat(item1.value)-parseFloat(item2.value)).toFixed(2);return 0;}}"
+        },
+        {
+            "name":"validateCondition",
+            "structure":"function validateCondition(item1,item2){if(item1.value!='' && item1.value=='SI'){item2.show=true;}else if(item1.value!='' && item1.value!='SI'){item2.show=false;item2.value='';item2.children[6].value='';item2.error='';}return 0;}"
+        },
+        {
+            "name":"validateCondition2",
+            "structure":"function validateCondition2(item1,item2,item3){if(item1.checked==false){item2.show=true;item3.show=true;item3.children[1].show=true;item3.children[2].show=true;}else{item2.show=false;item2.value='';item2.error='';item3.show=false;item3.error='';item3.children[0].checked=false;item3.children[1].error='';item3.children[1].value='';item3.children[1].show=false;item3.children[2].error='';item3.children[2].value='';item3.children[2].show=false;}return 0;}"
+        },
+        {
+            "name":"validateCondition3",
+            "structure":"function validateCondition3(item1){for(var hijo of item1.children){if(hijo.checked==true){item1.error='';return 0;}}item1.error='ESTA PREGUNTA ES OBLIGATORIA';return 1;}"
+        },
+        {
+            "name":"validateCondition4",
+            "structure":"function validateCondition4(item1,item2,item3){if(item1.children[3].checked==true){item2.show=true;item3.show=true;}else{item2.show=false;item2.error='';item2.value='';item3.show=false;item3.error='';item3.value='';}return 0;}"
+        },
+        {
+            "name":"calculateIMC",
+            "structure":"function calculateIMC(item1,item2,item3){if(item1.value!='' && item2.value!=''){var peso=parseFloat(item1.value);var talla=parseFloat(item2.value);if(!isNaN(peso) && !isNaN(talla)){if(peso>0 && talla>0){var imc=(peso/(talla*talla)).toFixed(2);if(imc<18.5){var clasification='BAJO PESO';var risk='AUMENTADO';}else if(imc>=18.5 && imc <=24.9){var clasification='NORMAL';var risk='PROMEDIO';}else if(imc>=25 && imc <=29.9){var clasification='SOBREPESO';var risk='AUMENTADO';}else if(imc>=30 && imc <=34.9){var clasification='OBESIDAD TIPO I';var risk='MODERADO';}else if(imc>=35 && imc <=39.9){var clasification='OBESIDAD TIPO II';var risk='SEVERO';}else if(imc>=40){var clasification='OBESIDAD MÓRBIDA';var risk='MUY SEVERO';}item3.value='DIAGNÓSTICO: EL INFANTE PRESENTA UN ÍNDICE DE MASA CORPORAL DE '+imc+' LO QUE LO CLASIFICA EN '+clasification+' Y PRESENTA UN RIESGO '+risk;return 0;}}}item3.value='';return 0;}"       
+        },
+        {
+            "name":"diagnosePerimeter",
+            "structure":"function diagnosePerimeter(item1,item2){if(item1.value!=''){var perimetro=parseFloat(item1.value);if(!isNaN(perimetro) && perimetro>=0){if(perimetro>=0 && perimetro<=11.5){var clasification='DESNUTRICIÓN AGUDA SEVERA';}else if(perimetro>11.5 && perimetro<=12.5){var clasification='DESNUTRICIÓN AGUDA MODERADA';}else if(perimetro>12.5 && perimetro<=13.5){var clasification='DESNUTRICIÓN AGUDA LEVE O EN RIESGO';}else if(perimetro>13.5){var clasification='NORMAL';}item2.value='DIAGNÓSTICO: EL INFANTE PRESENTA UN PERÍMETRO BRAQUIAL DE '+perimetro+' LO QUE LO CLASIFICA EN EL ESTADO: '+clasification;return 0;}}item2.value='';return 0;}"
+        },
+        {
+            "name":"calculateMETS",
+            "structure":"function calculateMETS(item1,item2){var val=item1.label1;if(item2.value){var mets=item2.value;}else{var mets=0;}if(item1.checked){mets=parseFloat(mets)+parseFloat(val);}else{mets=parseFloat(mets)-parseFloat(val);}item2.value='VALOR METS: '+mets.toFixed(1);return 0;}"
+        }
+    ]
+}

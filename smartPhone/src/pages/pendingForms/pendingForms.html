@@ -1,0 +1,75 @@
+<ion-header>
+    <ion-navbar color="navbar">
+        <button ion-button menuToggle>
+            <ion-icon name="menu" class="icon-menu"></ion-icon>
+        </button>
+        <ion-title>
+            Formularios
+        </ion-title>
+        <ion-buttons end>
+            <button *ngIf="!sendingForms" [disabled]="pendingForms.length==0" ion-button icon-end (click)="clickSendForms()">
+                Enviar
+                <ion-icon name="ios-send" class="icon-send"></ion-icon>
+            </button>
+            <button [disabled]="true" *ngIf="sendingForms" ion-button icon-end>
+                Enviando
+                <ion-spinner item-end name="dots" color="light"></ion-spinner>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <div *ngIf="comprobandoPendientes">
+        <ion-spinner item-end name="bubbles" color="menuItemNote"></ion-spinner>
+    </div>
+    <div *ngIf="!comprobandoPendientes">
+        <div *ngIf="pendingForms.length!=0">
+            <ion-card margin-bottom *ngFor="let form of pendingForms;let i = index">
+                <ion-item text-wrap data-toggle="collapse" [attr.href]="'#collapse'+i" aria-expanded="false">
+                    <ion-avatar item-start>
+                        <img src="assets/imgs/formulario4.png">
+                    </ion-avatar>
+                    <h3>{{form.formData.name}}</h3>
+                    <p style="color: #1f8490"> Identificación: {{form.formData.code}}</p>
+                    <p style="color: #1f8490" *ngIf="form.formData.type == 'initial'" no-margin margin-bottom text-wrap>Tipo: INICIAL</p>
+                    <p style="color: #1f8490" *ngIf="form.formData.type == 'follow_up'" no-margin margin-bottom text-wrap>Tipo: SEGUIMIENTO</p>
+                    <p style="color: #1f8490" *ngIf="form.formData.type != 'initial' && form.formData.type != 'follow_up'"  no-margin margin-bottom text-wrap>Tipo: {{form.formData.type}}</p>
+                    <ion-icon *ngIf="form.formData.errores>0 || form.formData.vacios>0" item-end color="navbar3" small name="warning" margin-right></ion-icon>
+                    <ion-icon item-end ios="ios-more" md="md-more"></ion-icon>
+                </ion-item>
+                <div class="collapse" id="collapse{{i}}">
+                    <div class="container">
+                        <div padding-left padding-right class="row">
+                            <div class="col-12">
+                                <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Creacion:</strong> {{form.formData.createdDate | date:'yyyy/MM/dd HH:mm:ss'}} </ion-label>
+                                <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Guardado:</strong> {{form.formData.saveDate |  date:'yyyy/MM/dd HH:mm:ss'}}</ion-label>
+                                <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Versión:</strong> {{ form.formData.version }}</ion-label>
+                                <ion-label *ngIf="form.formData.gps == 'required' && form.formData.coordinates " no-margin margin-bottom text-wrap><strong class="strongLabel">Ubicación:</strong> Lat. {{ form.formData.coordinates.latitude }}, Long.
+                                    {{ form.formData.coordinates.longitude }}</ion-label>
+                                <ion-label *ngIf="form.formData.gps == 'required' && form.formData.coordinates==null " no-margin margin-bottom text-wrap><strong class="strongLabel">Ubicación:</strong> No se pudo determinar</ion-label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <ion-label class="empty_number" no-margin margin-bottom text-wrap [class.strongLabelError]="form.formData.vacios>0"><strong [class.strongLabel]="!form.formData.vacios>0">Vacios: </strong> {{form.formData.vacios}}
+                                </ion-label>
+                                <button class='edit-button' [disabled]="sendingForms" ion-button block icon-start clear small (click)="clickEditForm(i)">
+                                    <ion-icon class="edit-button-icon" name="create"></ion-icon>
+                                    <div>Editar</div>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <ion-label class="bugs_number" no-margin margin-bottom text-wrap [class.strongLabelError]="form.formData.errores>0"><strong [class.strongLabel]="!form.formData.errores>0">Errores:</strong> {{form.formData.errores}}
+                                </ion-label>
+                                <button class='delete-button' [disabled]="sendingForms" ion-button block icon-start clear small (click)="clickDeletePendingForm(form, i)">
+                                    <ion-icon class="icon-trash" name="trash"></ion-icon>
+                                    <div>Eliminar</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ion-card>
+        </div>
+    </div>
+</ion-content>

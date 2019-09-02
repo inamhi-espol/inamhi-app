@@ -1,0 +1,22 @@
+<ion-menu [content]="navegacionPrincipal" persistent="true">
+    <ion-header>
+        <ion-toolbar text-center color="navbar">
+            <ion-title> Menu </ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content style="background: #2b3542">
+        <ion-list color="white" no-lines>
+            <button class="menu-items" [class.test3-open]="i==indexSelectedGeneral"  *ngFor="let item of listaGeneral;let i = index" ion-item color="white" (click)="selectItemMenuGeneral(item,i,$event)">
+                <ion-icon *ngIf="i==indexSelectedGeneral" name={{item.icon}} item-start color="menuItemSelected"></ion-icon>
+                <ion-icon class="label-menu" *ngIf="i!=indexSelectedGeneral" name={{item.icon}} item-start></ion-icon>
+                <ion-label *ngIf="i==indexSelectedGeneral" color="menuItemSelected">{{item.label}}</ion-label>
+                <ion-label class="label-menu" *ngIf="i!=indexSelectedGeneral">{{item.label}}</ion-label>
+            </button>
+            <button class="menu-items" ion-item color="white" (click)="cerrarSesion()">
+                <ion-icon class="label-menu" name="ios-key-outline" item-start></ion-icon>
+                <ion-label class="label-menu" >Cerrar Sesion</ion-label>
+            </button>
+        </ion-list>
+    </ion-content>
+</ion-menu>
+<ion-nav #navegacionPrincipal [root]="rootPage" [rootParams]="rootParams"></ion-nav>

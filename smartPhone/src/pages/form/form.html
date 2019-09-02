@@ -1,0 +1,475 @@
+<ion-header>
+    <ion-navbar color="navbar">
+        <ion-title>{{ template.name }}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <div *ngFor="let item of selectedTemplate.children;let indexCategoria = index">
+        <div *ngIf="item.type=='collapseList'">
+            <button text-wrap ion-item color="secondary" data-toggle="collapse" [attr.href]="'#collapseExample'+indexCategoria" aria-expanded="false" (click)="clickCollapseButton(indexCategoria,'collapseExample'+indexCategoria,$event)">
+                <ion-label>{{item.label}}</ion-label>
+                <ion-icon *ngIf="item.initialShow" item-end name="arrow-dropdown"></ion-icon>
+                <ion-icon *ngIf="!item.initialShow" item-end name="arrow-dropright"></ion-icon>
+            </button>
+            <div *ngIf="item.initialShow" class="collapse show" id="collapseExample{{indexCategoria}}">
+                <ion-list no-lines>
+                    <button *ngFor="let item2 of item.children;let indexSubCategoria = index" ion-item (click)="clickNextPage(item2,indexCategoria,indexSubCategoria)">
+                        <ion-icon name="{{item2.icon}}" item-start></ion-icon>
+                        <ion-label>{{item2.label}}</ion-label>
+                    </button>
+                </ion-list>
+            </div>
+            <div *ngIf="!item.initialShow" class="collapse" id="collapseExample{{indexCategoria}}">
+                <ion-list no-lines>
+                    <button *ngFor="let item2 of item.children;let indexSubCategoria = index" ion-item (click)="clickNextPage(item2,indexCategoria,indexSubCategoria)">
+                        <ion-icon name="{{item2.icon}}" item-start></ion-icon>
+                        <ion-label>{{item2.label}}</ion-label>
+                    </button>
+                </ion-list>
+            </div>
+        </div>
+
+        <ion-list no-lines *ngIf="item.type=='button'">
+            <button *ngFor="let item2 of item.children;let indexSubCategoria = index" ion-item (click)="clickNextPage(item2,0,indexSubCategoria)">
+                <ion-label>{{item.label}}</ion-label>
+            </button>
+        </ion-list>
+            
+        <button ion-button *ngIf="item.type=='boton'" (click)="verPorciones()">VER PORCIONES</button>
+
+        <button ion-button *ngIf="item.type=='boton'" (click)="verDeposiciones()">VER DEPOSICIONES</button>
+
+        <ion-list radio-group *ngIf="item.type=='radio_input'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show" (blur)="item.show && blurFunction($event,item.blurFunction)" [(ngModel)]="item.value">
+            <ion-list-header>
+                <ion-label [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
+            </ion-list-header>
+            <ion-item *ngFor="let opt of item.children;">
+                <ion-input *ngIf="opt.label=='OTROS'" placeholder={{item.placeholder}} type="text" [(ngModel)]="opt.value" (ionChange)="blurFunction($event,item.blurFunction)"></ion-input>
+                <ion-label *ngIf="opt.label!='OTROS'">{{opt.label}}</ion-label>
+                <ion-radio *ngIf="opt.label!='OTROS'" value={{opt.label}} checked=false (ionSelect)="blurFunction($event,item.blurFunction)"></ion-radio>
+            </ion-item>
+        </ion-list>
+        <div text-left *ngIf="item.type=='radio_input'" class="div-error" [class.error_message]="item.error && item.show">
+            {{item.error}}
+        </div>
+
+        <ion-list radio-group *ngIf="item.type=='radio'" id={{item.id}} [(ngModel)]="item.value" [class.hide_question]="!item.show" [class.show_question]="item.show" (blur)="item.show && blurFunction($event,item.blurFunction)">
+            <ion-list-header>
+                <ion-label [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
+            </ion-list-header>
+            <ion-item *ngFor="let opt of item.children;">
+                <ion-label>{{opt.label}}</ion-label>
+                <ion-radio value={{opt.label}} checked=false (ionSelect)="blurFunction($event,item.blurFunction)"></ion-radio>
+            </ion-item>
+        </ion-list>
+        <div text-left *ngIf="item.type=='radio'" class="div-error" [class.error_message]="item.error && item.show">
+            {{item.error}}
+        </div>
+
+        <ion-list radio-group *ngIf="item.type=='radio_title'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
+            <ion-list *ngFor="let opt of item.children;">
+                <ion-list-header>
+                    <ion-label class="pregunta">{{opt.label}}</ion-label>
+                </ion-list-header>
+                <ion-list *ngFor="let op of opt.children;">
+                    <ion-item>
+                        <ion-input *ngIf="op.label=='OTROS'" placeholder={{opt.placeholder}} type="text" [(ngModel)]="op.value" (ionChange)="saveForm()"></ion-input>
+                        <ion-label *ngIf="op.label!='OTROS'">{{op.label}}</ion-label>
+                        <ion-radio *ngIf="op.label!='OTROS'" value={{op.label}} checked=false (ionSelect)="saveForm()"></ion-radio>
+                    </ion-item>
+                </ion-list>
+            </ion-list>
+        </ion-list>
+
+        <ion-item *ngIf="item.type=='date'">
+            <ion-label [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
+            <ion-datetime cancelText="CANCELAR" doneText="SELECCIONAR" mode="md" displayFormat="DD/MM/YYYY" id={{item.id}} [(ngModel)]="item.value" (ionCancel)="blurFunction($event,item.blurFunction)"
+              (ionChange)="blurFunction($event,item.blurFunction)"></ion-datetime>
+            <ion-icon item-end name="calendar" [class.invalid_datepicker]="item.error"></ion-icon>
+        </ion-item>
+        <div text-left *ngIf="item.type=='date'" class="div-error" [class.error_message]="item.error">
+            {{item.error}}
+        </div>
+
+        <ion-item *ngIf="item.type=='time'">
+            <ion-label [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
+            <ion-datetime cancelText="CANCELAR" doneText="SELECCIONAR" mode="md" displayFormat="HH:mm" id={{item.id}} [(ngModel)]="item.value" (ionCancel)="blurFunction($event,item.blurFunction)" (ionChange)="blurFunction($event,item.blurFunction)"></ion-datetime>
+            <ion-icon item-end name="calendar" [class.invalid_datepicker]="item.error"></ion-icon>
+        </ion-item>
+        <div text-left *ngIf="item.type=='time'" class="div-error" [class.error_message]="item.error">
+            {{item.error}}
+        </div>
+
+        <ion-item *ngIf="item.type=='select'">
+            <ion-label [class.invalid_label]="item.error" stacked class="pregunta">{{item.label}}</ion-label>
+            <ion-select okText="SELECCIONAR" cancelText="CANCELAR" [(ngModel)]="item.value" placeholder="SELECCIONE UNA OPCIÓN">
+                <ion-option *ngFor="let op of item.options;" value={{op.label}}>{{op.label}}</ion-option>
+            </ion-select>
+        </ion-item>
+        <div text-left *ngIf="item.type=='select'" class="div-error" [class.error_message]="item.error">
+            {{item.error}}
+        </div>
+
+        <ion-item *ngIf="item.type=='input_number'">
+            <ion-label stacked [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
+            <ion-input type="number" [(ngModel)]="item.value" id={{item.id}} [class.invalid_input]="item.error" (ionChange)="blurFunction($event,item.blurFunction)"></ion-input>
+        </ion-item>
+        <div text-left *ngIf="item.type=='input_number'" class="div-error" [class.error_message]="item.error">
+            {{item.error}}
+        </div>
+
+        <div text-left *ngIf="item.type=='diagnose'" class="div-error pregunta" style="font-size:18px;margin-top:5px;" [class.error_message]="item.value">{{item.value}}</div>
+
+        <ion-item *ngIf="item.type=='input_text'">
+            <ion-label stacked [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
+            <ion-input type="text" [(ngModel)]="item.value" id={{item.id}} [class.invalid_input]="item.error" (ionChange)="blurFunction($event,item.blurFunction)"></ion-input>
+        </ion-item>
+        <div text-left *ngIf="item.type=='input_text'" class="div-error" [class.error_message]="item.error">
+            {{item.error}}
+        </div>
+
+        <div text-left *ngIf="item.type=='resultado'" class="div-error pregunta" style="font-size:18px;margin-top:5px;" [class.error_message]="item.value">
+            RESULTADO: {{item.value}}
+        </div>
+
+        <ion-list *ngIf="item.type=='checkbox_solo'" id={{item.id}}>
+            <ion-item>
+                <ion-label [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
+            </ion-item>
+            <ion-list>
+                <ion-item *ngFor="let opt of item.children;">
+                    <ion-label>{{opt.label}}</ion-label>
+                    <ion-checkbox [(ngModel)]="opt.checked" item-right checked="opt.checked" (ionChange)="blurFunction($event,item.blurFunction)"></ion-checkbox>
+                </ion-item>
+            </ion-list>
+        </ion-list>
+        <div text-left *ngIf="item.type=='checkbox_solo'" class="div-error" [class.error_message]="item.error">
+            {{item.error}}
+        </div>
+
+        <ion-grid *ngIf="item.type=='checkbox_input'">
+            <ion-label class="pregunta" style="padding-left:13px !important;">{{item.label}}</ion-label>
+            <ion-row *ngFor="let opt of item.children;" style="margin-left:0;margin-right:0" align-items-center>
+                <ion-col align-self-center>
+                    <ion-list>
+                        <ion-item style="padding-left:10px;">
+                            <ion-input *ngIf="opt.label=='OTROS'" placeholder={{item.placeholder_otros}} type="text" [(ngModel)]="opt.value" (ionChange)="saveForm()"></ion-input>
+                            <ion-label *ngIf="opt.label!='OTROS'">{{opt.label}}</ion-label>
+                            <ion-checkbox *ngIf="opt.label!='OTROS'" [(ngModel)]="opt.checked" item-right checked="opt.checked" (ionChange)="saveForm()"></ion-checkbox>
+                        </ion-item>
+                    </ion-list>
+                </ion-col>
+                <ion-col *ngIf="item.textarea==true" align-self-center>
+                    <ion-textarea placeholder={{item.placeholder}} type="text" [(ngModel)]="opt.text" (ionChange)="saveForm()"></ion-textarea>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <ion-list *ngIf="item.type=='checkbox_group'">
+            <ion-item>
+                <ion-label class="pregunta">{{item.label}}</ion-label>
+            </ion-item>
+            <ion-list *ngFor="let sub_item of item.children;">
+                <ion-item>
+                    <ion-label class="pregunta">{{sub_item.label}}</ion-label>
+                </ion-item>
+                <ion-item *ngFor="let opt of sub_item.children;">
+                    <ion-label>{{opt.label}}</ion-label>
+                    <ion-checkbox [(ngModel)]="opt.checked" item-right checked="opt.checked" (ionChange)="saveForm()"></ion-checkbox>
+                </ion-item>
+            </ion-list>
+        </ion-list>
+
+        <ion-item *ngIf="item.type=='textarea'">
+            <ion-textarea stacked placeholder={{item.placeholder}} type="text" [(ngModel)]="item.value" (ionChange)="saveForm()"></ion-textarea>
+        </ion-item>
+
+        <ion-grid *ngIf="item.type=='info_table'">
+            <ion-label class="pregunta">{{item.label}}</ion-label>
+            <ion-list *ngFor="let cat of item.children;" style="margin-left:0;margin-right:0" align-items-center>
+                <ion-row style="margin-left:0;margin-right:0" align-items-center>
+                    <ion-label col-1 align-self-center>{{cat.label1}}</ion-label>
+                    <ion-label col-10 align-self-center>{{cat.label2}}</ion-label>
+                </ion-row>
+                <ion-row *ngFor="let met of cat.children;" style="margin-left:0;margin-right:0" align-items-center>
+                    <ion-label col-1 align-self-center class="label_mets">{{met.label1}}</ion-label>
+                    <ion-label col-10 align-self-center class="label_mets">{{met.label2}}</ion-label>
+                    <ion-checkbox [(ngModel)]="met.checked" item-right checked="met.checked" (ionChange)="blurFunction($event,met.blurFunction)"></ion-checkbox>
+                </ion-row>
+            </ion-list>
+        </ion-grid>
+
+        <div *ngIf="item.type=='input_number_checkbox'" id={{item.id}} [class.hide_question]="!item.show">
+            <ion-item>
+                <ion-label [class.invalid_label]="item.error && item.show" class="pregunta">{{item.label}}</ion-label>
+            </ion-item>
+            <ion-list *ngFor="let opt of item.children;">
+                <ion-item *ngIf="opt.type=='input_number'" id={{opt.id}} [class.hide_question]="!opt.show">
+                    <ion-label fixed [class.invalid_label]="opt.error && opt.show">{{opt.label}}</ion-label>
+                    <ion-input type="number" [(ngModel)]="opt.value" id={{opt.id}} [class.invalid_input]="opt.error && opt.show" (ionChange)="blurFunction($event,opt.blurFunction)"></ion-input>
+                </ion-item>
+                <div text-left *ngIf="opt.type=='input_number'" class="div-error" [class.error_message]="opt.error && opt.show">
+                    {{opt.error}}
+                </div>
+                <ion-item [class.invalid_label]="item.error && item.show" *ngIf="opt.type=='checkbox'">
+                    <ion-label>{{opt.label}}</ion-label>
+                    <ion-checkbox [(ngModel)]="opt.checked" item-right checked="opt.checked" (ionChange)="blurFunction($event,opt.blurFunction)"></ion-checkbox>
+                </ion-item>
+            </ion-list>
+        </div>
+        <div text-left *ngIf="item.type=='input_number_checkbox'" class="div-error" [class.error_message]="item.error && item.show">
+            {{item.error}}
+        </div>
+
+        <ion-list *ngIf="item.type=='checkbox'">
+            <ion-item>
+                <ion-label class="pregunta">{{item.label}}</ion-label>
+            </ion-item>
+            <ion-item *ngFor="let opt of item.children;">
+                <ion-label>{{opt.label}}</ion-label>
+                <ion-checkbox [(ngModel)]="opt.value" item-right checked="opt.checked" (click)="clickFunction($event,item.keyupFunction)" required></ion-checkbox>
+            </ion-item>
+        </ion-list>
+
+        <ion-grid *ngIf="item.type=='table'">
+            <ion-label style="padding-left:15px !important;" class="pregunta">{{item.label}}</ion-label>
+            <ion-row *ngFor="let opt of item.children;" style="margin-left:0;margin-right:0;" align-items-center>
+                <ion-col col-3 align-self-center>
+                    <ion-list>
+                        <ion-item>
+                            <ion-input *ngIf="opt.label=='OTROS'" placeholder={{item.placeholder_otros}} type="text" [(ngModel)]="opt.value" (ionChange)="saveForm()"></ion-input>
+                            <ion-label *ngIf="opt.label!='OTROS'">{{opt.label}}</ion-label>
+                            <ion-checkbox *ngIf="opt.label!='OTROS'" [(ngModel)]="opt.checked" item-right checked="opt.checked" (ionChange)="saveForm()"></ion-checkbox>
+                        </ion-item>
+                    </ion-list>
+                </ion-col>
+                <ion-col col-4 align-self-center>
+                    <ion-item>
+                        <ion-select okText={{item.selects[0].okText}} cancelText={{item.selects[0].cancelText}} [(ngModel)]="opt.text1" placeholder={{item.selects[0].placeholder}} class="placeholder-select" (ionChange)="saveForm()">
+                            <ion-option *ngFor="let op of item.selects[0].children;" value={{op.label}}>{{op.label}}</ion-option>
+                        </ion-select>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-5 align-self-center>
+                    <ion-textarea placeholder={{item.placeholder}} type="text" [(ngModel)]="opt.text2" (ionChange)="saveForm()"></ion-textarea>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <ion-grid *ngIf="item.type=='table_2'">
+            <ion-label style="padding-left:15px !important;" class="pregunta">{{item.label}}</ion-label>
+            <ion-row *ngFor="let opt of item.children;" style="margin-left:0;margin-right:0" align-items-center>
+                <ion-col col-3 align-self-center>
+                    <ion-input *ngIf="opt.label=='OTROS'" placeholder={{item.input_placeholder}} type="text" [(ngModel)]="opt.value" (ionChange)="saveForm()"></ion-input>
+                    <ion-label *ngIf="opt.label!='OTROS'">{{opt.label}}</ion-label>
+                </ion-col>
+                <ion-col col-5 align-self-center>
+                    <ion-textarea placeholder={{item.placeholder_1}} type="text" [(ngModel)]="opt.text1" (ionChange)="saveForm()"></ion-textarea>
+                </ion-col>
+                <ion-col col-4 align-self-center>
+                    <ion-textarea *ngIf="opt.label=='OTROS'" placeholder={{item.placeholder_2}} type="text" [(ngModel)]="opt.text2" (ionChange)="saveForm()"></ion-textarea>
+                    <ion-label *ngIf="opt.label!='OTROS'">{{opt.text2}}</ion-label>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <div *ngIf="item.type=='table_3'">
+            <ion-label style="margin-left: 18px;font-size: 16px;" class="pregunta">{{item.label}}</ion-label>
+            <ion-grid *ngFor="let ali of item.options;">
+                <ion-label style="padding-left: 14px !important;" class="pregunta">{{ali.label}}</ion-label>
+                <ion-row *ngFor="let opt of ali.options;" style="margin-left:0;margin-right:0" align-items-center>
+                    <ion-col col-3 align-self-center>
+                        <ion-label>{{opt.label}}</ion-label>
+                    </ion-col>
+                    <ion-col col-3 align-self-center>
+                        <ion-item>
+                            <ion-select okText={{item.selects[0].okText}} cancelText={{item.selects[0].cancelText}} [(ngModel)]="opt.text1" placeholder={{item.selects[0].placeholder}} (ionChange)="saveForm()">
+                                <ion-option *ngFor="let op of item.selects[0].children;" value={{op.label}}>{{op.label}}</ion-option>
+                            </ion-select>
+                        </ion-item>
+                    </ion-col>
+                    <ion-col col-3 align-self-center>
+                        <ion-label *ngIf="opt.select==''" style="text-align: center !important;">{{opt.text2}}</ion-label>
+                        <ion-item *ngIf="opt.select!=''">
+                            <ion-select okText={{item.selects[opt.select].okText}} cancelText={{item.selects[opt.select].cancelText}} [(ngModel)]="opt.text2" placeholder={{item.selects[opt.select].placeholder}} (ionChange)="saveForm()">
+                                <ion-option *ngFor="let op of item.selects[opt.select].children;" value={{op.label}}>{{op.label}}</ion-option>
+                            </ion-select>
+                        </ion-item>
+                    </ion-col>
+                    <ion-col col-3 align-self-center>
+                        <ion-item>
+                            <ion-select okText={{item.selects[1].okText}} cancelText={{item.selects[1].cancelText}} [(ngModel)]="opt.text2" placeholder={{item.selects[1].placeholder}} (ionChange)="saveForm()">
+                                <ion-option *ngFor="let op of item.selects[1].children;" value={{op.label}}>{{op.label}}</ion-option>
+                            </ion-select>
+                        </ion-item>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </div>
+
+        <ion-grid *ngIf="item.type=='table_recordatorio'">
+            <ion-label class="pregunta">{{item.label}}</ion-label>
+            <ion-row *ngFor="let opt of item.children;" style="margin-left:0;margin-right:0" align-items-center>
+                <ion-col col-2 align-self-center>
+                    <ion-label>{{opt.label}}</ion-label>
+                </ion-col>
+                <ion-col col-2 align-self-center>
+                    <ion-item>
+                        <ion-datetime cancelText="CANCELAR" doneText="SELECCIONAR" mode="md" displayFormat="HH:mm" [(ngModel)]="opt.text1" (ionChange)="saveForm()" placeholder={{item.placeholder_1}}></ion-datetime>
+                        <ion-icon item-end name="time"></ion-icon>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-2 align-self-center>
+                    <ion-textarea placeholder={{item.placeholder_2}} type="text" [(ngModel)]="opt.text2" (ionChange)="saveForm()"></ion-textarea>
+                </ion-col>
+                <ion-col col-2 align-self-center>
+                    <ion-textarea placeholder={{item.placeholder_3}} type="text" [(ngModel)]="opt.text3" (ionChange)="saveForm()"></ion-textarea>
+                </ion-col>
+                <ion-col col-2 align-self-center>
+                    <ion-textarea placeholder={{item.placeholder_4}} type="text" [(ngModel)]="opt.text4" (ionChange)="saveForm()"></ion-textarea>
+                </ion-col>
+                <ion-col col-2 align-self-center>
+                    <ion-input type="number" placeholder={{item.placeholder_5}} [(ngModel)]="opt.value" id={{opt.id}} [class.invalid_input]="opt.error" (ionChange)="blurFunction($event,opt.blurFunction)"></ion-input>
+                </ion-col>
+                <div text-left class="div-error" [class.error_message]="opt.error">
+                    {{opt.error}}
+                </div>
+            </ion-row>
+        </ion-grid>
+
+        <ion-grid *ngIf="item.type=='table_4'">
+            <ion-label class="pregunta">{{item.label}}</ion-label>
+            <ion-row *ngFor="let opt of item.children;" style="margin-left:0;margin-right:0" align-items-center>
+                <ion-col col-4 align-self-center>
+                    <ion-label>{{opt.label}}</ion-label>
+                </ion-col>
+                <ion-col col-4 align-self-center>
+                    <ion-item *ngIf="opt.label=='FECHA'">
+                        <ion-datetime cancelText="CANCELAR" doneText="SELECCIONAR" mode="md" displayFormat="DD/MM/YYYY" [(ngModel)]="opt.text1" required></ion-datetime>
+                        <ion-icon item-end name="calendar"></ion-icon>
+                    </ion-item>
+                    <ion-item *ngIf="opt.label!='FECHA'">
+                        <ion-input type="number" placeholder={{item.placeholder_1}} [(ngModel)]="opt.text1" (keyup)="keyupFunction($event,opt.keyupFunction)" (blur)="blurFunction($event,opt.blurFunction)"></ion-input>
+                    </ion-item>
+                    <div text-left *ngIf="opt.label!='FECHA'" style="display:none;padding:16px;" [class.error_message]="opt.error">
+                        {{item.error}}
+                    </div>
+                </ion-col>
+                <ion-col col-4 align-self-center>
+                    <ion-item *ngIf="opt.label=='FECHA'">
+                        <ion-datetime cancelText="CANCELAR" doneText="SELECCIONAR" mode="md" displayFormat="DD/MM/YYYY" [(ngModel)]="opt.text2" required></ion-datetime>
+                        <ion-icon item-end name="calendar"></ion-icon>
+                    </ion-item>
+                    <ion-item *ngIf="opt.label!='FECHA'">
+                        <ion-input type="number" placeholder={{item.placeholder_2}} [(ngModel)]="opt.text2" (keyup)="keyupFunction($event,opt.keyupFunction)" (blur)="blurFunction($event,opt.blurFunction)"></ion-input>
+                    </ion-item>
+                    <div text-left *ngIf="opt.label!='FECHA'" style="display:none;padding:16px;" [class.error_message]="opt.error">
+                        {{item.error}}
+                    </div>
+                </ion-col>
+            </ion-row>
+            <ion-label>LA CLASIFICACIÓN DE VALORES SE REPRESENTA DE LA SIGUIENTE MANERA:\nDESNUTRICIÓN SEVERA: DS\nDESNUTRICIÓN MODERADA: DM\nDESNUTRICIÓN LEVE: DL\nNORMAL: N\nSOBREPESO: SP\nOBESIDAD: O</ion-label>
+        </ion-grid>
+
+        <ion-grid *ngIf="item.type=='table_6'">
+            <ion-label style="padding-left:15px !important;" class="pregunta">{{item.label}}</ion-label>
+            <ion-row *ngFor="let opt of item.children;" style="margin-left:0;margin-right:0" align-items-center>
+                <ion-col col-4 align-self-center>
+                    <ion-item>
+                        <ion-label>{{opt.label}}</ion-label>
+                        <ion-checkbox [(ngModel)]="opt.checked" item-right checked="opt.checked" (ionChange)="saveForm()"></ion-checkbox>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-3 align-self-center>
+                    <ion-item>
+                        <ion-input type="text" placeholder={{item.placeholder_1}} [(ngModel)]="opt.text1" (ionChange)="saveForm()"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-5 align-self-center>
+                    <ion-item>
+                        <ion-textarea type="text" placeholder={{item.placeholder_2}} [(ngModel)]="opt.text2" (ionChange)="saveForm()"></ion-textarea>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <ion-grid *ngIf="item.type=='table_deposiciones'">
+            <ion-label class="pregunta">{{item.label}}</ion-label>
+            <ion-row style="margin-left:0;margin-right:0" align-items-center>
+                <ion-col *ngFor="let ch of item.children;" align-self-center>
+                    <ion-item *ngIf="ch.type=='input_number'">
+                        <ion-input type="number" placeholder={{ch.label}} [(ngModel)]="ch.value" (ionChange)="saveForm()"></ion-input>
+                    </ion-item>
+                    <ion-item *ngIf="ch.type=='input_text'">
+                        <ion-input type="text" placeholder={{ch.label}} [(ngModel)]="ch.value" (ionChange)="saveForm()"></ion-input>
+                    </ion-item>
+                    <ion-item *ngIf="ch.type=='select'">
+                        <ion-select okText={{ch.okText}} cancelText={{ch.cancelText}} [(ngModel)]="ch.value" placeholder={{ch.placeholder}}>
+                            <ion-option *ngFor="let op of ch.options;" value={{op.label}}>{{op.label}}</ion-option>
+                        </ion-select>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <ion-grid *ngIf="item.type=='table_anamnesis'">
+            <ion-label class="pregunta">{{item.label}}</ion-label>
+            <ion-row *ngFor="let opt of item.children;" style="margin-left:0;margin-right:0" align-items-center>
+                <ion-col col-3 align-self-center>
+                    <ion-item>
+                        <ion-label>{{opt.label}}</ion-label>
+                        <ion-checkbox [(ngModel)]="opt.value" item-right checked="opt.checked" (ionChange)="saveForm()"></ion-checkbox>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-2 align-self-center>
+                    <ion-item>
+                        <ion-input type="number" placeholder={{item.placeholder_1}} [(ngModel)]="opt.text1" (ionChange)="saveForm()"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-2 *ngIf="opt.label!='ALIMENTOS'" align-self-center>
+                    <ion-item>
+                        <ion-input type="text" placeholder={{item.placeholder_2}} [(ngModel)]="opt.text2" (ionChange)="saveForm()"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-2 *ngIf="opt.label!='ALIMENTOS'" align-self-center>
+                    <ion-item>
+                        <ion-input type="number" placeholder={{item.placeholder_3}} [(ngModel)]="opt.text3" (ionChange)="saveForm()"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-3 *ngIf="opt.label!='ALIMENTOS'" align-self-center>
+                    <ion-item>
+                        <ion-input type="text" placeholder={{item.placeholder_4}} [(ngModel)]="opt.text4" (ionChange)="saveForm()"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-12 *ngIf="opt.label=='ALIMENTOS'">
+                    <ion-label>{{opt.label2}}</ion-label>
+                    <ion-row *ngFor="let al of opt.children;" align-self-center>
+                        <ion-col col-12 *ngIf="al.label=='AGUA'" align-self-center>
+                            <ion-item>
+                                <ion-label>{{al.label}}</ion-label>
+                                <ion-checkbox [(ngModel)]="al.value" item-right checked="al.checked" (ionChange)="saveForm()"></ion-checkbox>
+                            </ion-item>
+                        </ion-col>
+                        <ion-col col-6 *ngIf="al.label=='BEBIDAS'" align-self-center>
+                            <ion-item>
+                                <ion-label>{{al.label}}</ion-label>
+                                <ion-checkbox [(ngModel)]="al.checked" item-right checked="al.checked" (ionChange)="saveForm()"></ion-checkbox>
+                            </ion-item>
+                        </ion-col>
+                        <ion-col col-6 *ngIf="al.label=='BEBIDAS'" align-self-center>
+                            <ion-item>
+                                <ion-input type="text" placeholder={{al.placeholder}} [(ngModel)]="al.value" (ionChange)="saveForm()"></ion-input>
+                            </ion-item>
+                        </ion-col>
+                        <ion-col col-12 *ngIf="al.label=='OTROS'" align-self-center>
+                            <ion-item>
+                                <ion-input type="text" placeholder={{al.placeholder}} [(ngModel)]="al.value" (ionChange)="saveForm()"></ion-input>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+    </div>
+</ion-content>

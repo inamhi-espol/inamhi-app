@@ -1,0 +1,38 @@
+<ion-header>
+    <ion-navbar color="rojoBotonFormulario">
+        <ion-title>
+            Editar Formulario
+        </ion-title>
+        <ion-buttons left>
+            <button ion-button icon-only  (click)="closeModal()">
+                <ion-icon name="close" class="icon-close"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-buttons end>
+            <button  [disabled]="!formUserData.formTemplate!='' || !formUserData.formName!='' || !formularioExiste==false || !(formUserData.formName!=formularioEdicion.nombre || formUserData.formTemplate!=formularioEdicion.plantilla || formUserData.formDescription!=formularioEdicion.descripcion)" ion-button icon-only  (click)="editarFormulario()">
+                <ion-icon name="checkmark"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content padding style="background: #f4f4f4"  >
+    <ion-card>
+        <ion-item >
+            <ion-label color="navbar3">Plantilla</ion-label>
+            <ion-select select-md-placeholder-color="blue" placeholder="Selecciona una plantilla" (ionChange)="changeSelect()" [(ngModel)]="formUserData.formTemplate">
+                <ion-option value="Formulario Principal">Formulario Principal</ion-option>
+                <ion-option value="Otro">Otro</ion-option>
+            </ion-select>
+        </ion-item>
+        <ion-item >
+            <ion-label color="navbar3" stacked>Nombre del formulario</ion-label>
+            <ion-input [class.errorInputFormularioExiste]="formularioExiste" (ionChange)="changeInputNombreFormulario()"  type="text" placeholder="Escribe un nombre..." [(ngModel)]="formUserData.formName"></ion-input>
+        </ion-item>
+        <p *ngIf="formularioExiste" padding-left class="error">error: Ya existe un formulario con este nombre</p>
+        <ion-item margin-bottom>
+            <ion-label color="navbar3" stacked>Descripcion</ion-label>
+            <ion-textarea placeholder="Escribe una descripcion..." [(ngModel)]="formUserData.formDescription"></ion-textarea>
+        </ion-item>
+    </ion-card>
+    <button color="rojoBotonFormulario" *ngIf="formUserData.formName!=formularioEdicion.nombre || formUserData.formTemplate!=formularioEdicion.plantilla || formUserData.formDescription!=formularioEdicion.descripcion" ion-button block (click)="deshacerCambios()">REFRESH</button>
+</ion-content>

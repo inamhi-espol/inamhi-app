@@ -1,0 +1,40 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block titulo %}{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  {% block extraStyle %} {% endblock %}
+</head>
+
+<body>
+
+  <ul class="topnav">
+    <li><a href="{% url 'home' %}">Formularios Realizados</a></li>
+    {% if account.user_type == "administrador" %}
+    <li><a href="{% url 'users' %}">Usuarios</a></li>
+    <li><a href="{% url 'templates' %}">Plantillas</a></li>
+    {% endif %}
+    <li class="right"><a href="{% url 'logout' %}">Cerrar sesión</a></li>
+  </ul>
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <div {% if message.tags %} class="alert alert-{{ message.tags }}" class="alert alert-dismissible fade in" {% endif %}>
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      {{ message }}
+    </div>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% block content %}
+  {% endblock %}
+  {% block extraScripts %} {% endblock %}
+</body>
+
+</html>

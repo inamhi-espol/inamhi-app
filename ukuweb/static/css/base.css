@@ -1,0 +1,131 @@
+body {
+  margin: 0;
+}
+
+ul.topnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #2b3542;
+}
+
+ul.topnav li {
+  float: left;
+}
+
+ul.topnav li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 15px !important;
+}
+
+ul.topnav li a:hover:not(.active) {
+  background-color: #50637b;
+}
+
+
+ul.topnav li a.active {
+  background-color: #50637b;
+}
+
+ul.topnav li.right {
+  float: right;
+}
+
+.content {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.button {
+  padding: 6px 12px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.button.cancel {
+  background-color: #ffffff;
+  border: 1px solid #3d4a5a;
+  color: #3d4a5a;
+}
+
+.button.danger {
+  background-color: #dd544f;
+  border: 1px solid #dd544f;
+  color: #ffffff;
+}
+
+.button.danger.right {
+  float: right;
+}
+
+.button.default {
+  background-color: #50637b;
+  border: 1px solid #50637b;
+  color: #ffffff;
+}
+
+.button:hover {
+  text-decoration: none;
+}
+
+.button.cancel:hover {
+  color: #50637b;
+}
+
+.button.danger:hover {
+  color: #ffffff;
+}
+
+.button.default:hover {
+  color: #ffffff;
+}
+.fade.in{
+  opacity: 1;
+}
+.alert-error {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+
+button.btn.btn-default.right {
+  float: right;
+  background: #dd544f;
+  color: white;
+}
+
+button.btn.btn-success,
+button.btn.btn-success:active,
+button.btn.btn-success:visited,
+button.btn.btn-success:hover {
+  background-color: #3d4a5a;
+  border-color: #3d4a5a;
+}
+
+.messages {
+  padding-left: 0px;
+}
+td a{
+  color: #3d4a5a;
+}
+td a:hover{
+  color: #82ad57;
+}
+
+@media screen and (max-width: 600px) {
+
+  ul.topnav li.right,
+  ul.topnav li {
+    float: none;
+  }
+}

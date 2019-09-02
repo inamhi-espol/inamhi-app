@@ -1,0 +1,38 @@
+<ion-header>
+    <ion-navbar color='navbar'>
+        <ion-title text-center>
+            Iniciar Sesión
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content padding>
+    <div padding text-center>
+        <br>
+        <br>
+        <img src="./assets/imgs/inamhi_logo.png">
+        <br>
+        <br>
+        <br>
+        <ion-item class="input-username" margin-top color="light" *ngIf="!linkedUser">
+            <ion-label color="navbar" fixed>
+                <ion-icon color="navbar" name="person"></ion-icon>
+            </ion-label>
+            <ion-input type="text" placeholder="Usuario" [(ngModel)]="user.username" name="username"></ion-input>
+        </ion-item>
+        <button class="input-username" ion-item color="light" margin-top *ngIf="linkedUser">
+            <ion-icon color="navbar" name="person" item-start></ion-icon>
+            <ion-label color="navbar" margin-left item-start>{{linkedUser.username}}</ion-label>
+            <ion-note item-end color="menuItemSelected"></ion-note>
+        </button>
+        <ion-item class="input-password" margin-top color="light">
+            <ion-label color="navbar" fixed>
+                <ion-icon color="navbar" name="key" md="md-key"></ion-icon>
+            </ion-label>
+            <ion-input type="password" placeholder="Clave" [(ngModel)]="user.password" name="password"></ion-input>
+        </ion-item>
+        <br>
+        <button class="btn-login" color="button" *ngIf="!linkedUser" [disabled]="!user.username || !user.password" ion-button block (click)="attemptAuth()">Ingresar</button>
+        <button class="btn-login" ion-button icon-start size="small" *ngIf="linkedUser" [disabled]="!user.password" block (click)="attemptAuth()">Ingresar</button>
+        <button class="btn-unlink" ion-button icon-end size="small" *ngIf="linkedUser" block (click)="desvincular()">Iniciar con otra cuenta</button>
+    </div>
+</ion-content>

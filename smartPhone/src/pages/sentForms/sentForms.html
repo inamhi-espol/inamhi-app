@@ -1,0 +1,53 @@
+<ion-header>
+    <ion-navbar color="navbar">
+        <button ion-button menuToggle>
+            <ion-icon name="menu" class="icon-menu"></ion-icon>
+        </button>
+        <ion-title>
+            Formularios
+        </ion-title>
+        <ion-buttons end>
+            <button *ngIf="!deletingSentForms" [disabled]="sentForms.length==0" ion-button icon-end (click)="clickDeleteSentForms()">
+                Eliminar
+                <ion-icon name="close" class="icon-close"></ion-icon>
+            </button>
+            <button [disabled]="true" *ngIf="deletingSentForms" ion-button icon-end>
+                Eliminando
+                <ion-spinner item-end name="dots" color="light"></ion-spinner>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <div *ngIf="sentForms.length!=0">
+        <ion-card margin-bottom *ngFor="let sentForm of sentForms;let j = index">
+            <ion-item text-wrap data-toggle="collapse" [attr.href]="'#collapseSentForm'+j" aria-expanded="false">
+                <ion-avatar item-start>
+                    <img src="assets/imgs/formulario4.png">
+                </ion-avatar>
+                <h3>{{sentForm.name}}</h3>
+                <p style="color: #1f8490"> Código: {{sentForm.code}}</p>
+                <ion-icon item-end ios="ios-more" md="md-more"></ion-icon>
+            </ion-item>
+            <div class="collapse" id="collapseSentForm{{j}}">
+                <div class="container">
+                    <div padding-left padding-right class="row">
+                        <div class="col-12">
+                            <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Creacion:</strong> {{sentForm.createdDate | date:'yyyy/MM/dd HH:mm:ss'}} </ion-label>
+                            <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Enviado:</strong> {{sentForm.sendDate |  date:'yyyy/MM/dd HH:mm:ss'}}</ion-label>
+                            <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Tipo:</strong> {{sentForm.type}}</ion-label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button class='delete-button' ion-button block icon-start clear small (click)="clickDeleteSentForm(j)">
+                                <ion-icon name="trash" class="icon-trash"></ion-icon>
+                                <div>Eliminar</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ion-card>
+    </div>
+</ion-content>

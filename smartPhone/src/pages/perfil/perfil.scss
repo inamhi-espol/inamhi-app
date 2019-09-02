@@ -1,0 +1,9 @@
+page-perfil {
+	.pageEnter {
+		animation:animationPageEnter 1.2s;
+	}
+	@keyframes animationPageEnter {
+        0%   {transform:translateY(15px); opacity:0.2}
+        100% {transform:translateY(0px); opacity:1}
+    }
+}
