@@ -344,6 +344,19 @@ iframe {
   background-color: #50637b;
 }
 
+.fixed-logos{
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  background-color: #bfbfbfeb;
+  width: 150px;
+  padding: 10px 0px;
+}
+
+.img-logo-espol{
+  margin-top: 25px;
+}
+
 /*------------------------------------------------------------------
 [ Alert validate ]*/
 .validate-input {

@@ -44,7 +44,7 @@
 				<form action="{% url 'login' %}" class="login100-form validate-form flex-sb flex-w" method="post">
 					{% csrf_token %}
 					<div class="logo m-b-16">
-						<img src="{% static 'images/icons/inamhi_logo.png' %}" />
+						<img src="{% static 'images/icons/inamhi_logo.png' %}" /><img class="img-logo-espol" src="{% static 'images/icons/espol.png' %}" >
 					</div>
 
 					<div class="wrap-input100 validate-input m-b-16" data-validate = "Nombre de usuario requerido">
@@ -68,9 +68,6 @@
 			</div>
 		</div>
 	</div>
-
-
-	<div id="dropDownSelect1"></div>
 
 <!--===============================================================================================-->
 	<script src="{% static 'vendor/jquery/jquery-3.2.1.min.js' %}"></script>
