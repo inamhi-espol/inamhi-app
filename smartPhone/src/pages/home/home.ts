@@ -284,14 +284,14 @@ export class HomePage {
                                     var hora = ti.split(':');
                                     fecha_noti = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
 
-                                    /*this.localNotifications.schedule({
+                                    this.localNotifications.schedule({
                                         id: this.id,
                                         icon: 'file://assets/imgs/logo_notification.png',
                                         title: 'NUEVO FORMULARIO',
                                         text: 'Tiene un nuevo formulario llamado ' + nombre + ' de tipo ' + tipo + ' por realizar',
                                         trigger: {at: new Date(fecha_noti.getFullYear(), fecha_noti.getMonth(), fecha_noti.getDate(), fecha_noti.getHours(), fecha_noti.getMinutes(), 0)},
                                         led: 'FF0000'
-                                    });*/
+                                    });
 
                                     this.notifications[template.name].push(this.id);
                                     this.id++;

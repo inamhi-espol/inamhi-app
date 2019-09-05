@@ -14,7 +14,6 @@
 // automatically applied to the <body> element in the app.
 
 $select-md-placeholder-color: black !important;
-$popover-md-width: 700px !important;
 
 .item-inner {
 	border:0px;
@@ -48,12 +47,7 @@ ion-icon{
 .toast-wrapper {
     background-color: rgba(165, 64, 53,0.9)!important
 }
-.popover-content{
-    width: 700px !important;
-    top: 200px !important;
-    left: 50px !important;
-    max-height: 70% !important;
-}
+
 .button-md {
 	background-color: #2b3542;
 	font-size: 11px;

@@ -1,18 +1,17 @@
 import { Component, ViewChild, Injector } from '@angular/core';
-import { NavController, MenuController, ViewController, NavParams, Events, AlertController, Platform, LoadingController, Navbar, PopoverController } from 'ionic-angular';
+import { NavController, MenuController, ViewController, NavParams, Events, AlertController, Platform, LoadingController, Navbar } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Coordinates, Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { PopoverPage } from './popover';
-import { PopoverPage2 } from './popover2';
 
 @Component({
     selector: 'page-form',
     templateUrl: 'form.html'
 })
-export class FormPage extends PopoverPage {
+
+export class FormPage {
     template;
     formData;
     formsData = {};
@@ -42,7 +41,6 @@ export class FormPage extends PopoverPage {
         public loadingController: LoadingController,
         public navCtrl: NavController,
         public platform: Platform,
-        public popoverCtrl: PopoverController,
         public viewCtrl: ViewController) {
         super(viewCtrl);
 
@@ -122,20 +120,6 @@ export class FormPage extends PopoverPage {
         }
         this.infoTemplates[index] = this.template;
         this.storage.set('infoTemplates', this.infoTemplates);
-    }
-
-    verPorciones(evento) {
-        let popover = this.popoverCtrl.create(PopoverPage);
-        popover.present({
-            ev: evento
-        });
-    }
-
-    verDeposiciones(evento) {
-        let popover = this.popoverCtrl.create(PopoverPage2);
-        popover.present({
-            ev: evento
-        });
     }
 
     save(index, pending_form_index) {

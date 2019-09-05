@@ -15,7 +15,6 @@ import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
-//import { HomePage2 } from '../pages/home2/home2';
 import { FormPage } from '../pages/form/form';
 import { FollowUpPage } from '../pages/followUp/followUp';
 import { AgregarFormularioPage } from '../pages/agregarFormulario/agregarFormulario';
@@ -28,8 +27,6 @@ import { PendingFormsPage } from '../pages/pendingForms/pendingForms';
 import { IntelSecurity } from '@ionic-native/intel-security';
 import { DatePicker } from '@ionic-native/date-picker';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { PopoverPage } from '../pages/form/popover';
-import { PopoverPage2 } from '../pages/form/popover2';
 
 @NgModule({
   declarations: [
@@ -43,9 +40,7 @@ import { PopoverPage2 } from '../pages/form/popover2';
     PerfilPage,
     SentFormsPage,
     FormulariosPage,
-    PendingFormsPage,
-    PopoverPage,
-    PopoverPage2
+    PendingFormsPage
   ],
   imports: [
     BrowserModule,
@@ -67,9 +62,7 @@ import { PopoverPage2 } from '../pages/form/popover2';
     PerfilPage,
     SentFormsPage,
     FormulariosPage,
-    PendingFormsPage,
-    PopoverPage,
-    PopoverPage2
+    PendingFormsPage
   ],
   providers: [
     StatusBar,
