@@ -148,7 +148,7 @@ export class MyApp {
                 else {
                     var formularioEnviado = {
                         sendDate: result["fechaEnvio"],
-                        createdDate: result["responseData"]["createdDate"],
+                        createdDate: result["responseData"]["created_date"],
                         name: result["responseData"]["name"],
                         code: result["responseData"]["code"],
                         type: result["responseData"]["type"],

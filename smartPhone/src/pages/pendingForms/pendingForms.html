@@ -30,7 +30,7 @@
                         <img src="assets/imgs/formulario4.png">
                     </ion-avatar>
                     <h3>{{form.formData.name}}</h3>
-                    <p style="color: #1f8490"> Identificación: {{form.formData.code}}</p>
+                    <p style="color: #1f8490" *ngIf="form.formData.code"> Identificación: {{form.formData.code}}</p>
                     <p style="color: #1f8490" *ngIf="form.formData.type == 'initial'" no-margin margin-bottom text-wrap>Tipo: INICIAL</p>
                     <p style="color: #1f8490" *ngIf="form.formData.type == 'follow_up'" no-margin margin-bottom text-wrap>Tipo: SEGUIMIENTO</p>
                     <p style="color: #1f8490" *ngIf="form.formData.type != 'initial' && form.formData.type != 'follow_up'"  no-margin margin-bottom text-wrap>Tipo: {{form.formData.type}}</p>
