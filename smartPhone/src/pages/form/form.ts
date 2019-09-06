@@ -42,8 +42,6 @@ export class FormPage {
         public navCtrl: NavController,
         public platform: Platform,
         public viewCtrl: ViewController) {
-        super(viewCtrl);
-
         this.menuCtrl.enable(true);
         this.template = this.navParams.data.template;
         this.formData = this.navParams.data.formData;
@@ -79,7 +77,7 @@ export class FormPage {
             var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-checkbox, ion-select"));
             var elementos = [];
             var errores = 0;
-            
+
             for (var el of array) {
                 if (el.id) {
                     elementos.push(el.id);

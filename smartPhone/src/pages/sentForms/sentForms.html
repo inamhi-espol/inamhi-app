@@ -26,7 +26,7 @@
                     <img src="assets/imgs/formulario4.png">
                 </ion-avatar>
                 <h3>{{sentForm.name}}</h3>
-                <p style="color: #1f8490"> Código: {{sentForm.code}}</p>
+                <p *ngIf="sentForm.code" style="color: #1f8490"> Código: {{sentForm.code}}</p>
                 <ion-icon item-end ios="ios-more" md="md-more"></ion-icon>
             </ion-item>
             <div class="collapse" id="collapseSentForm{{j}}">
