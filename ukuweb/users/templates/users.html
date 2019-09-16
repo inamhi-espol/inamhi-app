@@ -30,6 +30,7 @@
           <th>Nombre</th>
           <th>Apellido</th>
           <th>Nombre de usuario</th>
+          <th>Tipo</th>
           <th></th>
         </tr>
       </thead>
@@ -40,6 +41,7 @@
           <td>{{ interviewer.name }}</td>
           <td>{{ interviewer.last_name }}</td>
           <td>{{ interviewer.user.username }}</td>
+          <td>{{ interviewer.user_type }}</td>
           <td><a href="{% url 'view-user' interviewer.uid %}">Ver</a></td>
         </tr>
         {% endfor %}

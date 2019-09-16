@@ -133,6 +133,7 @@ class FormData(models.Model):
                 "code": self.code if self.code else "",
                 "user": self.user.user.username if self.user else None,
                 "include_gps": self.include_gps,
+                "input_interval": self.template.input_interval,
                 "last_version": last_version.to_dict(),
             }
         return None
