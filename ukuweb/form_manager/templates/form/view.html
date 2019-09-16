@@ -35,6 +35,10 @@
       <input type="number" class="form-control" id="quantity" name="quantity" value="{{ quantity }}">
     </div>
     <div class="form-group">
+      <label for="input_interval">Intervalo entre Hora definida y Hora de última edición</label>
+      <input type="time" class="form-control" id="input_interval" name="input_interval" value="{{ input_interval }}" required>
+    </div>
+    <div class="form-group">
       <label for="gps">Requiere GPS</label>
       {% if require_gps %}
       <input type="checkbox" id="gps" name="gps" value="true" checked>

@@ -16,52 +16,50 @@
 {% endblock %}
 {% block content %}
 <div id="done_forms">
-  <h3>Formularios realizados</h3>
+  <h3>Formulario {{ form.name }}</h3>
   <div>
-    {% for type, formInfo in forms.items %}
     <div class="tables">
       <div class="type-name">
-        <b class="form-type">Tipo:</b> {{ type }}<br>
+        <b class="form-type">Usuario:</b> {{ form.user.name }}<br>
       </div>
       <div class="table-responsive">
         <table id="dtBasicExample" class="dtBasicExample table table-striped table-bordered table-sm" cellspacing="0" width="100%">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Nombre del formulario</th>
-              <th>Usuario</th>
-              <th>Versión</th>
-              <th>Fecha de creación</th>
-              <th>Fecha de envío</th>
-              <th style="text-align: center;">Incluye GPS</th>
-              <th></th>
+              <th>Estado</th>
+              <th>Campo</th>
+              <th>Hora definida</th>
+              <th>Hora de última edición</th>
+              <th>Número de ediciones</th>
+              <th>Valor inicial</th>
+              <th>Valor final</th>
+              <th>Ubicación definida</th>
+              <th>Ubicación de última edición</th>
             </tr>
           </thead>
           <tbody>
-            {% for form in formInfo %}
-            {% for v in form.versions %}
-              <tr>
-                <td>{{ forloop.counter }}</td>
-                <td><a href="{% url 'view-form' form.uid %}">{{ form.name }}</a></td>
-                <td>{{ form.user }}</td>
-                <td>{{ v.version }}</td>
-                <td>{{ v.saved_date|date:'d-m-Y H:i:s' }}</td>
-                <td>{{ form.send_date|date:'d-m-Y H:i:s' }}</td>
-                <td style="text-align: center;">{% if form.include_gps %}
-                  <i class="fa fa-check" style="color: green;"></i>
-                  {% else %}
-                  <i style="color: red;" class="fa">&#xf00d;</i>
-                  {% endif %}
-                </td>
-                <td><a href="{% url 'export-form' v.id %}">Exportar <i style='font-size:14px' class='fas'>&#xf56e;</i></a></td>
-              </tr>
-            {% endfor %}
+            {% for field in form.fields.all %}
+            <tr>
+              <td style="text-align: center;">{% if field.status %}
+                <i class="fa fa-check" style="color: green;"></i>
+                {% else %}
+                <i style="color: red;" class="fa">&#xf00d;</i>
+                {% endif %}
+              </td>
+              <td>{{ field.name }}</td>
+              <td>{{ field.input_time|date:'H:i:s' }}</td>
+              <td>{{ field.save_date|date:'H:i:s' }}</td>
+              <td>{{ field.editions }}</td>
+              <td>{{ field.initial_value }}</td>
+              <td>{{ field.final_value }}</td>
+              <td>{{ field.get_defined_coordinate }}</td>
+              <td>{{ field.get_saved_coordinate }}</td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
-    {% endfor %}
     <hr>
   </div>
   {% endblock %}

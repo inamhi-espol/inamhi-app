@@ -14,7 +14,7 @@ from django.http import (
 from django.template import loader
 from rest_framework.response import Response
 from .models import Template, UserTemplate, UserProfile, UserType, TemplateType
-from api.models import FormData
+from api.models import FormData, FormDataVersion
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
@@ -78,6 +78,7 @@ def view(request, uid):
             context["type_selected"] = template.type.code
             context["form_name"] = template.name
             context["quantity"] = template.quantity
+            context["input_interval"] = template.input_interval.strftime("%H:%M")
             context["require_gps"] = template.gps
 
             template_view = loader.get_template("form/view.html")
@@ -110,6 +111,7 @@ def create(request):
                 type=template_type,
                 structure=structure,
                 gps=require_gps,
+                input_interval=data["input_interval"],
                 quantity=data["quantity"],
             )
 
@@ -158,6 +160,7 @@ def edit(request, uid):
                 structure=structure,
                 quantity=data["quantity"],
                 gps=require_gps,
+                input_interval=data["input_interval"],
             )
             template = template.get()
             resource_id = template.uid
@@ -226,7 +229,7 @@ def separate_form_by_type(forms):
     forms_dict = {}
     for form in forms:
         forms_dict[form.type.name] = forms_dict.get(form.type.name, []) + [
-            form.to_dict()
+            form.to_dict_with_versions()
         ]
     return forms_dict
 
@@ -296,14 +299,15 @@ def login_user(request):
         return HttpResponse(template.render(context, request))
 
 
-def export_form(request, uid):
-    form = FormData.objects.filter(uid=uid)
-    if form.exists():
-        form = form.get()
+def export_form(request, id):
+    form_data_version = FormDataVersion.objects.filter(id=id)
+    if form_data_version.exists():
+        form_data_version = form_data_version.get()
         filename = "{0}-{1}.xlsx".format(
-            form.name.encode("utf-8").decode("string_escape"), form.created_date
+            form_data_version.form_data.name.encode("utf-8").decode("string_escape"),
+            form_data_version.saved_date,
         )
-        output = api.convert_form_to_excel(form, filename)
+        output = api.convert_form_to_excel(form_data_version, filename)
         response = HttpResponse(
             output,
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -313,3 +317,28 @@ def export_form(request, uid):
     else:
         messages.error(request, "El archivo no existe")
         return redirect(urlresolvers.reverse("home"))
+
+
+@login_required(login_url="login")
+@require_http_methods(["GET"])
+def view_form(request, uid):
+    account = request.session.get("account")
+    if account:
+        user_id = account.get("uid")
+        user_type = account.get("type")
+        userProfile = UserProfile.objects.get(uid=user_id)
+        form = FormData.objects.filter(uid=uid)
+        data = {}
+        if form.exists():
+            form = form[len(form) - 1]
+            template = loader.get_template("form_data/table.html")
+            context = {
+                "account": {"username": userProfile.name, "user_type": user_type},
+                "form": form,
+            }
+            return HttpResponse(template.render(context, request))
+        else:
+            messages.error(request, "El formulario no existe")
+            return redirect(urlresolvers.reverse("home"))
+    else:
+        return redirect(urlresolvers.reverse("login"))
