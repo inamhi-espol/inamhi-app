@@ -32,6 +32,7 @@
               <th>Usuario</th>
               <th>Fecha de creación</th>
               <th>Fecha de envío</th>
+              <th>Margen de tiempo para llenar la sección</th>
               <th style="text-align: center;">Incluye GPS</th>
               <th></th>
             </tr>
@@ -44,6 +45,7 @@
                 <td>{{ form.user }}</td>
                 <td>{{ form.last_version.saved_date|date:'d-m-Y H:i:s' }}</td>
                 <td>{{ form.send_date|date:'d-m-Y H:i:s' }}</td>
+                <td style="text-align: center;">{{ form.input_interval|date:'H:i:s' }}</td>
                 <td style="text-align: center;">{% if form.include_gps %}
                   <i class="fa fa-check" style="color: green;"></i>
                   {% else %}
