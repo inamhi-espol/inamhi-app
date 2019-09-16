@@ -74,8 +74,10 @@ def save_form_data_fields(form, data, input_time):
             final_value,
         )
         form_data_field = FormDataField(
-            defined_coordinate=convert_string_as_coordinate(data["saved_coordinates"]),
-            saved_coordinate=convert_string_as_coordinate(data["defined_coordinates"]),
+            defined_coordinate=convert_string_as_coordinate(
+                data["defined_coordinates"]
+            ),
+            saved_coordinate=data["saved_coordinate"],
             form_data=form,
             name=data["fields"][i],
             save_date=data["saved_date"],
