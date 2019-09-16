@@ -61,6 +61,7 @@ class Template(models.Model):
     quantity = models.IntegerField(default=0)
     gps = models.BooleanField(default=False)
     set_name = models.CharField(null=True, max_length=36)
+    input_interval = models.TimeField(null=True, blank=True)
     set_id = models.CharField(null=True, max_length=36)
 
     def to_dict(self):
@@ -71,6 +72,7 @@ class Template(models.Model):
             "quantity": self.quantity,
             "set_name": self.set_name,
             "set_id": self.set_id,
+            "input_interval": self.input_interval,
             "gps": "required" if self.gps else "not-required",
         }
         structure = json.loads(self.structure)

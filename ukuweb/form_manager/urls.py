@@ -24,5 +24,6 @@ urlpatterns = [
         views.view,
         name="view-template",
     ),
-    url(r"^form/(?P<uid>[a-zA-Z0-9_\-]{1,36})$", views.export_form, name="export-form"),
+    url(r"^form_version/(?P<id>\d+)$", views.export_form, name="export-form"),
+    url(r"^(?P<uid>[a-zA-Z0-9_\-]{1,36})/view/$", views.view_form, name="view-form"),
 ]

@@ -10,11 +10,107 @@ from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
-from .models import FormData
+from .models import FormData, FormDataField
 from form_manager.models import UserProfile, TemplateType, UserTemplate, UserType
 from ukuweb import settings
 import utils as api
 import ast
+import numpy as np
+from decimal import Decimal
+from datetime import datetime, timedelta
+
+
+def date_time_to_seconds(date):
+    return (date.hour * 60 + date.minute) * 60 + date.second
+
+
+def status_form_data_fields(
+    input_time, saved_date, time_interval, editions_number, initial_value, final_value
+):
+    """
+    input_time (datetime): Time in which the interviewer should fill out the field
+    saved_date (datetime): Time in which the interviewer filled the field
+    time_interval (time): Time interval in which the interviewer must fill in the field
+    editions_number (int): Field editions number
+    initial_value (decimal): First value that interviewer entered the field
+    final_value (decimal): Last value that interviewer entered the field
+    """
+    input_seconds = date_time_to_seconds(input_time)
+    saved_seconds = date_time_to_seconds(saved_date)
+    diff = abs(saved_seconds - input_seconds)
+    interval_seconds = date_time_to_seconds(time_interval)
+    if diff > interval_seconds:
+        return False
+    elif editions_number > 1:
+        return False
+    elif initial_value and final_value and initial_value != final_value:
+        return False
+    return True
+
+
+def convert_string_as_coordinate(coordinates):
+    if coordinates:
+        coordinates_list = coordinates.split(",")
+        longitude = coordinates_list[0]
+        latitude = coordinates_list[1]
+        return "{u'longitude':%s,u'latitude':%s}" % (longitude, latitude)
+    return None
+
+
+def save_form_data_fields(form, data, input_time):
+    values_m = np.array(data["values"])
+    cols_number = len(values_m[0, :])
+    time_interval = form.template.input_interval
+    for i in range(cols_number):
+        changed_values = list(set(filter(None, values_m[:, i])))
+        initial_value = Decimal(changed_values[0]) if changed_values else None
+        final_value = Decimal(changed_values[-1]) if changed_values else None
+        status = status_form_data_fields(
+            datetime.strptime(input_time, "%H:%M"),
+            data["saved_date"],
+            time_interval,
+            len(changed_values),
+            initial_value,
+            final_value,
+        )
+        form_data_field = FormDataField(
+            defined_coordinate=convert_string_as_coordinate(data["saved_coordinates"]),
+            saved_coordinate=convert_string_as_coordinate(data["defined_coordinates"]),
+            form_data=form,
+            name=data["fields"][i],
+            save_date=data["saved_date"],
+            editions=len(changed_values),
+            initial_value=initial_value,
+            final_value=final_value,
+            input_time=datetime.strptime(input_time, "%H:%M"),
+            status=status,
+        )
+        form_data_field.save()
+
+
+def save_form_data_fields_from_form(form):
+    versions = form.versions.all()
+    sections = []
+    data = {}
+    if len(versions) >= 1:
+        version = ast.literal_eval(versions[0].data)
+        sections = api.get_sections_from_form(version)
+        defined_coordinate = api.get_defined_location_from_form(version)
+        for time_section in sections:
+            obj = api.get_obj_from_section(
+                ast.literal_eval(versions[0].data), time_section
+            )
+            fields = api.get_labels_from_form(obj)
+            data[time_section] = {"fields": fields, "values": []}
+            for v in versions:
+                obj_version = ast.literal_eval(v.data)
+                if len(defined_coordinate) > 0:
+                    data[time_section]["defined_coordinates"] = defined_coordinate[0]
+                data[time_section]["saved_date"] = v.saved_date
+                data[time_section]["saved_coordinates"] = v.coordinates
+                obj = api.get_obj_from_section(obj_version, time_section)
+                data[time_section]["values"].append(api.get_values_from_form(obj))
+            save_form_data_fields(form, data[time_section], time_section)
 
 
 @api_view(["GET"])
@@ -101,11 +197,15 @@ def save_form_data(request):
         if userProfile.exists() and userProfile[0]:
             set_id = request.data["template"].get("setId", None)
             form = FormData.objects.create(request.data)
-            form.save()
-            filename = "{0}-{1}".format(form.name, form.created_date)
+            save_form_data_fields_from_form(form)
             if set_id:
-                data = form.data
-                api.convert_to_csv_and_send_to_ckan(data, filename, set_id)
+                versions = form.versions.all()
+                for v in versions:
+                    filename = "{0}v.{1}-{2}".format(
+                        form.name, v.version, v.saved_date.strftime("%Y-%m-%d %H:%M")
+                    )
+                    data = ast.literal_eval(v.data)
+                    api.convert_to_csv_and_send_to_ckan(data, filename, set_id)
             context["msg"] = "Guardado correctamente"
             context["data"] = form.to_dict()
             status = 200

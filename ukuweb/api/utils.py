@@ -7,6 +7,15 @@ from .models import FormData
 import xlsxwriter
 import io
 from ukuweb.settings import FORMS_ROOT
+import time
+
+
+def is_time_format(input):
+    try:
+        time.strptime(input, "%H:%M")
+        return True
+    except ValueError:
+        return False
 
 
 def send_file_to_ckan(file, name, set_id):
@@ -109,6 +118,8 @@ def get_labels_from_form_to_xls(obj):
                 )
             else:
                 objects = objects + get_labels_from_form_to_xls(i)
+        else:
+            objects = objects + get_labels_from_form_to_xls(i)
     return objects
 
 
@@ -141,6 +152,52 @@ def get_labels_from_form(obj):
                 objects.append(i[key].encode("utf-8").decode("string_escape"))
             else:
                 objects = objects + get_labels_from_form(i)
+        else:
+            objects = objects + get_labels_from_form(i)
+    return objects
+
+
+def get_sections_from_form(obj):
+    objects = []
+    for i in obj:
+        is_key = type(obj) is dict and type(i) is not dict and type(i) is not list
+        is_dict = type(i) is dict
+        if is_key:
+            next_value_is_dict = type(obj[i]) is dict or type(obj[i]) is list
+            if next_value_is_dict:
+                objects = objects + get_sections_from_form(obj[i])
+        elif is_dict:
+            key = i.get("label", None)
+            if key:
+                is_time_instance = is_time_format(key)
+                if is_time_instance:
+                    objects.append(key)
+            else:
+                objects = objects + get_sections_from_form(i)
+        else:
+            objects = objects + get_sections_from_form(i)
+    return objects
+
+
+def get_obj_from_section(obj, section):
+    objects = []
+    for i in obj:
+        is_key = type(obj) is dict and type(i) is not dict and type(i) is not list
+        is_dict = type(i) is dict
+        if is_key:
+            next_value_is_dict = type(obj[i]) is dict or type(obj[i]) is list
+            if next_value_is_dict:
+                objects = objects + get_obj_from_section(obj[i], section)
+        elif is_dict:
+            key = i.get("label", None)
+            if key:
+                is_time_instance = is_time_format(key)
+                if is_time_instance and key == section:
+                    objects.append(i["children"])
+            else:
+                objects = objects + get_obj_from_section(i, section)
+        else:
+            objects = objects + get_obj_from_section(i, section)
     return objects
 
 
@@ -166,6 +223,8 @@ def get_tables_from_form(obj):
                 objects.append(i)
             else:
                 objects = objects + get_tables_from_form(i)
+        else:
+            objects = objects + get_tables_from_form(i)
     return objects
 
 
@@ -284,6 +343,31 @@ def get_values_from_form(obj):
                 values.append(value)
             else:
                 values = values + get_values_from_form(i)
+        else:
+            values = values + get_values_from_form(i)
+    return values
+
+
+def get_defined_location_from_form(obj):
+    values = []
+    for i in obj:
+        is_key = type(obj) is dict and type(i) is not dict and type(i) is not list
+        is_dict = type(i) is dict
+        if is_key:
+            next_value_is_dict = type(obj[i]) is dict or type(obj[i]) is list
+            if next_value_is_dict:
+                values = values + get_defined_location_from_form(obj[i])
+        elif is_dict:
+            has_key_and_value = (
+                i.get("id", None) is not None and i.get("value", None) is not None
+            )
+            if has_key_and_value:
+                if i["id"] == "ubicacion_estacion":
+                    values.append(i["value"])
+            else:
+                values = values + get_defined_location_from_form(i)
+        else:
+            values = values + get_defined_location_from_form(i)
     return values
 
 

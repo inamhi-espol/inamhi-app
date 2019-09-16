@@ -6,3 +6,4 @@ python-dateutil
 XlsxWriter
 django-import-export
 requests
+numpy
