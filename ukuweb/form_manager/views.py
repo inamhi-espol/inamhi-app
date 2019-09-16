@@ -174,7 +174,6 @@ def edit(request, uid):
                 f.write(structure)
             f = open("{0}/{1}".format(FORMS_ROOT, filename), "r")
             response = api.update_file_in_ckan(f, resource_id)
-            print(response)
             f.close()
             if response.get("error"):
                 messages.error(request, "Hubo un error al enviar el formulario")
@@ -232,9 +231,11 @@ def logout_user(request):
 def separate_form_by_type(forms):
     forms_dict = {}
     for form in forms:
-        forms_dict[form.type.name] = forms_dict.get(form.type.name, []) + [
-            form.to_dict_with_versions()
-        ]
+        form_dict = form.to_dict_with_last_version()
+        if form_dict:
+            forms_dict[form.type.name] = forms_dict.get(form.type.name, []) + [
+                form.to_dict_with_last_version()
+            ]
     return forms_dict
 
 

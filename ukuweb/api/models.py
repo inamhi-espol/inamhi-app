@@ -119,21 +119,23 @@ class FormData(models.Model):
             fields_list.append(field.to_dict())
         return fields_list
 
-    def to_dict_with_versions(self):
-        versions = []
-        for v in self.versions.all():
-            versions.append(v.to_dict())
-        return {
-            "uid": self.uid,
-            "name": self.name if self.name else "",
-            "type": self.type.name if self.type else "",
-            "created_date": self.created_date,
-            "send_date": self.send_date,
-            "code": self.code if self.code else "",
-            "user": self.user.user.username if self.user else None,
-            "include_gps": self.include_gps,
-            "versions": versions,
-        }
+    def to_dict_with_last_version(self):
+        versions = self.versions.all()
+        last_version = None
+        if versions:
+            last_version = versions.latest("saved_date")
+            return {
+                "uid": self.uid,
+                "name": self.name if self.name else "",
+                "type": self.type.name if self.type else "",
+                "created_date": self.created_date,
+                "send_date": self.send_date,
+                "code": self.code if self.code else "",
+                "user": self.user.user.username if self.user else None,
+                "include_gps": self.include_gps,
+                "last_version": last_version.to_dict(),
+            }
+        return None
 
 
 class FormDataVersion(models.Model):
@@ -159,7 +161,6 @@ class FormDataVersion(models.Model):
         return {
             "id": self.id,
             "data": self.data,
-            "version": self.version,
             "saved_date": self.saved_date,
             "coordinates": self.coordinates_name(),
             "reason": self.reason if self.reason else None,
