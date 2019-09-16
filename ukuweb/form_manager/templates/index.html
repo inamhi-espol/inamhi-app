@@ -30,7 +30,6 @@
               <th>#</th>
               <th>Nombre del formulario</th>
               <th>Usuario</th>
-              <th>Versión</th>
               <th>Fecha de creación</th>
               <th>Fecha de envío</th>
               <th style="text-align: center;">Incluye GPS</th>
@@ -39,13 +38,11 @@
           </thead>
           <tbody>
             {% for form in formInfo %}
-            {% for v in form.versions %}
               <tr>
                 <td>{{ forloop.counter }}</td>
                 <td><a href="{% url 'view-form' form.uid %}">{{ form.name }}</a></td>
                 <td>{{ form.user }}</td>
-                <td>{{ v.version }}</td>
-                <td>{{ v.saved_date|date:'d-m-Y H:i:s' }}</td>
+                <td>{{ form.last_version.saved_date|date:'d-m-Y H:i:s' }}</td>
                 <td>{{ form.send_date|date:'d-m-Y H:i:s' }}</td>
                 <td style="text-align: center;">{% if form.include_gps %}
                   <i class="fa fa-check" style="color: green;"></i>
@@ -53,9 +50,8 @@
                   <i style="color: red;" class="fa">&#xf00d;</i>
                   {% endif %}
                 </td>
-                <td><a href="{% url 'export-form' v.id %}">Exportar <i style='font-size:14px' class='fas'>&#xf56e;</i></a></td>
+                <td><a href="{% url 'export-form' form.last_version.id %}">Exportar <i style='font-size:14px' class='fas'>&#xf56e;</i></a></td>
               </tr>
-            {% endfor %}
             {% endfor %}
           </tbody>
         </table>
