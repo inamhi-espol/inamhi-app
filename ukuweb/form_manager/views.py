@@ -78,7 +78,11 @@ def view(request, uid):
             context["type_selected"] = template.type.code
             context["form_name"] = template.name
             context["quantity"] = template.quantity
-            context["input_interval"] = template.input_interval.strftime("%H:%M")
+            context["input_interval"] = (
+                template.input_interval.strftime("%H:%M")
+                if template.input_interval
+                else ""
+            )
             context["require_gps"] = template.gps
 
             template_view = loader.get_template("form/view.html")
