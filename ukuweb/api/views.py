@@ -16,7 +16,6 @@ from ukuweb import settings
 import utils as api
 import ast
 import numpy as np
-from decimal import Decimal
 from datetime import datetime, timedelta
 
 
@@ -32,8 +31,8 @@ def status_form_data_fields(
     saved_date (datetime): Time in which the interviewer filled the field
     time_interval (time): Time interval in which the interviewer must fill in the field
     editions_number (int): Field editions number
-    initial_value (decimal): First value that interviewer entered the field
-    final_value (decimal): Last value that interviewer entered the field
+    initial_value (string): First value that interviewer entered the field
+    final_value (string): Last value that interviewer entered the field
     """
     input_seconds = date_time_to_seconds(input_time)
     saved_seconds = date_time_to_seconds(saved_date)
@@ -51,9 +50,9 @@ def status_form_data_fields(
 def convert_string_as_coordinate(coordinates):
     if coordinates:
         coordinates_list = coordinates.split(",")
-        longitude = coordinates_list[0]
-        latitude = coordinates_list[1]
-        return "{u'longitude':%s,u'latitude':%s}" % (longitude, latitude)
+        latitude = coordinates_list[0]
+        longitude = coordinates_list[1]
+        return "{u'latitude':%s,u'longitude':%s}" % (latitude, longitude)
     return None
 
 
@@ -63,8 +62,8 @@ def save_form_data_fields(form, data, input_time):
     time_interval = form.template.input_interval
     for i in range(cols_number):
         changed_values = list(set(filter(None, values_m[:, i])))
-        initial_value = Decimal(changed_values[0]) if changed_values else None
-        final_value = Decimal(changed_values[-1]) if changed_values else None
+        initial_value = changed_values[0] if changed_values else None
+        final_value = changed_values[-1] if changed_values else None
         status = status_form_data_fields(
             datetime.strptime(input_time, "%H:%M"),
             data["saved_date"],
