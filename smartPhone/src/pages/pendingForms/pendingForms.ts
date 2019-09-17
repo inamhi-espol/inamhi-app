@@ -1,9 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, NavParams, Events, AlertController } from 'ionic-angular';
+import { NavController, NavParams, Events, AlertController, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormPage } from '../form/form';
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { Coordinates, Geolocation } from '@ionic-native/geolocation';
+import { LocationAccuracy } from '@ionic-native/location-accuracy';
 
 @Component({
     selector: 'page-pendingForms',
@@ -15,11 +18,17 @@ export class PendingFormsPage {
     sendingForms = false;
     infoTemplates;
     formsData;
+    geolocationAuth;
+    loading;
     pendingForms = [];
+    coordinates = null;
+    reason = null;
+    indexCurrentVersion;
 
     constructor(public alertCtrl: AlertController, public httpClient: HttpClient, private events: Events,
         private datePipe: DatePipe, private storage: Storage, public navCtrl: NavController,
-        public navParams: NavParams) {
+        public navParams: NavParams, private diagnostic: Diagnostic, private locationAccuracy: LocationAccuracy,
+        private geolocation: Geolocation, public loadingController: LoadingController) {
     }
 
     getPendingForms() {
@@ -80,7 +89,6 @@ export class PendingFormsPage {
             }
         }
         this.storage.set('infoTemplates', this.infoTemplates);
-
     }
 
     increase_remain_quantity(template, formType) {
@@ -121,8 +129,8 @@ export class PendingFormsPage {
 
     clickSendForms() {
         const confirm = this.alertCtrl.create({
-            title: 'Seguro que quieres enviar tus formularios?',
-            message: 'Al enviarlas ya no podras acceder a ellas',
+            title: '¿Seguro que quieres enviar tus formularios?',
+            message: 'Al enviarlos al servidor ya no podrás acceder a ellos',
             buttons: [
                 {
                     text: 'Enviar',
@@ -174,44 +182,156 @@ export class PendingFormsPage {
     }
 
     async clickEditForm(i) {
-        let pendingForms = await this.storage.get("pendingForms");
-        let pendingForm = pendingForms[i];
-        let currentF = pendingForm.formData;
-        let templateUuid = pendingForm.template;
-        let version = currentF.version;
-        let template;
-        let selectedTemplate;
-        let infoTemplateIndex;
-        let formsData = await this.storage.get("formsData");
-        let forms = formsData[templateUuid];
-        let currentForm;
-        for (let form of forms){
-          if(form.uuid == currentF.uuid){
-            currentForm = form;
-            break;
-          }
-        }
-        let infoTemplates = await this.storage.get("infoTemplates");
-        for (let i = 0; i < infoTemplates.length; i++) {
-            let temp = infoTemplates[i];
-            if (temp.uuid == templateUuid) {
-                template = temp;
-                infoTemplateIndex = i;
+        try{
+            let pendingForms = await this.storage.get("pendingForms");
+            let pendingForm = pendingForms[i];
+            let currentF = pendingForm.formData;
+            let templateUuid = pendingForm.template;
+            let version = currentF.versions.length;
+            let template;
+            let selectedTemplate;
+            let infoTemplateIndex;
+            let formsData = await this.storage.get("formsData");
+            let forms = formsData[templateUuid];
+            let currentForm;
+            for (let form of forms){
+              if(form.uuid == currentF.uuid){
+                currentForm = form;
+                //currentForm = JSON.parse(JSON.stringify(form));
                 break;
+              }
             }
+            let infoTemplates = await this.storage.get("infoTemplates");
+            for (let i = 0; i < infoTemplates.length; i++) {
+                let temp = infoTemplates[i];
+                if (temp.uuid == templateUuid) {
+                    template = temp;
+                    //template = JSON.parse(JSON.stringify(temp));
+                    infoTemplateIndex = i;
+                    break;
+                }
+            }
+            template.data = JSON.parse(JSON.stringify(currentForm.versions[currentForm.versions.length - 1].data));
+            selectedTemplate = JSON.parse(JSON.stringify(currentForm.versions[currentForm.versions.length - 1].data)); 
+
+            this.requestLocationAuthorization(template, templateUuid);
+            if (template.gps == "required") {
+                this.navCtrl.push(FormPage, {
+                    template: template,
+                    selectedTemplate: selectedTemplate,
+                    formData: selectedTemplate,
+                    currentForm: currentForm,
+                    forms: forms,
+                    formsData: formsData,
+                    pendingForms: pendingForms,
+                    geolocationAuth: "GRANTED",
+                    infoTemplates: infoTemplates,
+                    infoTemplateIndex: infoTemplateIndex,
+                    coordinates: this.coordinates,
+                    reason: this.reason,
+                    indexCurrentVersion: version
+                });
+            } else {
+                this.navCtrl.push(FormPage, {
+                    template: template,
+                    selectedTemplate: selectedTemplate,
+                    formData: selectedTemplate,
+                    currentForm: currentForm,
+                    forms: forms,
+                    formsData: formsData,
+                    pendingForms: pendingForms,
+                    geolocationAuth: "GRANTED",
+                    infoTemplates: infoTemplates,
+                    infoTemplateIndex: infoTemplateIndex,
+                    indexCurrentVersion: version
+                });
+            }
+        }catch (err) {
+            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         }
-        currentForm.version = version + 1;
-        this.navCtrl.push(FormPage, {
-            template: template,
-            selectedTemplate: currentForm.data,
-            formData: currentForm.data,
-            currentForm: currentForm,
-            forms: forms,
-            formsData: formsData,
-            pendingForms: pendingForms,
-            geolocationAuth: "GRANTED",
-            infoTemplates: infoTemplates,
-            infoTemplateIndex: infoTemplateIndex
+    }
+
+    requestLocationAuthorization(template, templateUuid) {
+        this.diagnostic.requestLocationAuthorization().then(res => {
+            this.geolocationAuth = res;
+            this.locationAccuracy.canRequest().then((canRequest: boolean) => {
+                if (canRequest) {
+                    this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
+                        () => {
+                            this.loading = this.loadingController.create({
+                                content: 'Obteniendo ubicación ...',
+                            });
+                            this.loading.present();
+                            this.geolocation.getCurrentPosition({
+                                enableHighAccuracy: true,
+                                timeout: 12000
+                            }).then((res) => {
+                                this.loading.dismiss();
+                                this.coordinates = {
+                                    latitude: res.coords.latitude,
+                                    longitude: res.coords.longitude
+                                };
+                                //IR A LA EDICION DE FORMULARIO
+                            }).catch((error) => {
+                                this.loading.dismiss();
+                                let alert = this.alertCtrl.create({
+                                    title: "Error",
+                                    subTitle: "No pudimos acceder a tu ubicación.",
+                                    buttons: ["ok"]
+                                });
+                                //IR A LA EDICION DE FORMULARIO
+                            });
+                        }).catch(err => {
+                            this.geolocationAuth = "DENIED";
+                            this.requireReason();
+                        });
+                } else {
+                    this.requireReason();
+                }
+            }).catch(err => {
+                console.log(JSON.stringify(err));
+                this.requireReason();
+            });
+        }).catch(err => {
+            console.log(JSON.stringify(err));
         });
     }
+
+    requireReason() {
+        let alert = this.alertCtrl.create({
+            title: 'Ingrese un motivo',
+            cssClass: 'alert-title',
+            inputs: [
+                {
+                    name: 'reason',
+                    type: 'text',
+                }
+            ],
+            buttons: [
+                {
+                    text: 'Continuar',
+                    handler: data => {
+                        if (data && data.reason.length > 1) {
+                            //GUARDAR EL MOTIVO Y ABRIR LA EDICIÓN DEL FORMULARIO
+                            this.reason = data.reason;
+                        } else {
+                            const alert = this.alertCtrl.create({
+                                title: 'Ingrese un motivo',
+                                cssClass: 'alert-title',
+                                buttons: ['OK']
+                            });
+                            alert.present();
+                            return false;
+                        }
+                    }
+                },
+                {
+                    text: 'Cancelar',
+                    handler: () => { }
+                }
+            ]
+        });
+        alert.present();
+    }
+
 }

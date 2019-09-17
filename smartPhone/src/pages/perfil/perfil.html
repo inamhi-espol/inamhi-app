@@ -29,14 +29,14 @@
             <ion-item id="perfil-list-item-container13">
                 <div id="perfil-markdown18" style="text-align:center;" class="show-list-numbers-and-dots">
                     <p style="margin-top:0px;color:#877979;">
-                        <b>Formularios Enviados:</b> {{ sentForms }}
+                        <b>Formularios pendientes de enviar:</b> {{ pendingForms }}
                     </p>
                 </div>
             </ion-item>
             <ion-item id="perfil-list-item-container13">
                 <div id="perfil-markdown18" style="text-align:center;" class="show-list-numbers-and-dots">
                     <p style="margin-top:0px;color:#877979;">
-                        <b>Formularios realizados:</b> {{ pendingForms }}
+                        <b>Formularios enviados:</b> {{ sentForms }}
                     </p>
                 </div>
             </ion-item>
@@ -44,6 +44,6 @@
     </div>
     <div class="pageEnter"  padding *ngIf="!user">
         <h4>No existen credenciales</h4>
-        <p>No has iniciado Sesion</p>
+        <p>No has iniciado Sesión</p>
     </div>
 </ion-content>

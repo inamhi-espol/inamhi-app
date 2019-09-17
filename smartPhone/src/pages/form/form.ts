@@ -25,7 +25,9 @@ export class FormPage {
     funciones = [];
     infoTemplates = [];
     loading;
+    reason;
     infoTemplateIndex;
+    indexCurrentVersion;
 
     @ViewChild(Navbar) navbarName: Navbar;
 
@@ -50,6 +52,9 @@ export class FormPage {
         this.templateUuid = this.template.uuid;
         this.infoTemplateIndex = this.navParams.data.infoTemplateIndex;
         this.forms = this.navParams.data.forms;
+        this.coordinates = null;
+        this.reason = this.navParams.data.reason;
+        this.indexCurrentVersion = this.navParams.data.indexCurrentVersion;
         if (this.navParams.data.formsData != null) {
             this.formsData = this.navParams.data.formsData;
         } else {
@@ -63,6 +68,9 @@ export class FormPage {
         this.pendingForms = this.navParams.data.pendingForms;
         this.infoTemplates = this.navParams.data.infoTemplates;
 
+        /*this.infoTemplates[this.infoTemplateIndex] = this.template;
+        this.storage.set('infoTemplates', this.infoTemplates);*/
+
         this.storage.get('calculos').then((calculos) => {
             for (let calc of calculos.calculos) {
                 this.funciones[calc.name] = eval('var a;a=' + calc.structure);
@@ -70,6 +78,10 @@ export class FormPage {
         }).catch(error => {
             console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
         });
+
+        /*this.storage.get('templates').then((templates) => {
+            this.templates = templates;
+        });*/
     }
 
     ionViewDidEnter() {
@@ -120,14 +132,24 @@ export class FormPage {
         this.storage.set('infoTemplates', this.infoTemplates);
     }
 
+    //index: indice del formulario que estoy haciendo
     save(index, pending_form_index) {
-        this.currentForm.saveDate = new Date();
-        this.currentForm.data = this.formData;
-        this.forms[index] = this.currentForm;
-        this.formsData[this.templateUuid] = this.forms;
-        this.storage.set("formsData", this.formsData);
-        this.pendingForms[pending_form_index].formData = this.currentForm;
-        this.storage.set("pendingForms", this.pendingForms);
+        let formD = JSON.parse(JSON.stringify(this.formData));
+        //this.currentForm.versions[this.indexCurrentVersion].coordinates
+        this.geolocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 12000
+        }).then((res) => {
+            this.geolocationAuth = "GRANTED";
+            this.coordinates = {
+                latitude: res.coords.latitude,
+                longitude: res.coords.longitude
+            };
+            this.saveCoordinates(formD, this.coordinates, index, pending_form_index);
+        }).catch((error) => {
+            console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
+            this.saveCoordinates(formD, null, index, pending_form_index);
+        });
     }
 
     async saveForm() {
@@ -144,9 +166,9 @@ export class FormPage {
                 this.currentForm.type,
                 this.infoTemplateIndex);
             this.save(this.forms.length - 1, pending_form_index);
-        }
-        else {
+        } else {
             let index = 0;
+            //index = this.formsData[this.templateUuid].length;
             for (let form of this.formsData[this.templateUuid]) {
                 if (form.uuid == this.currentForm.uuid) {
                     currentFormExists = true;
@@ -156,6 +178,7 @@ export class FormPage {
                 }
             }
             pending_form_index = 0;
+            //pending_form_index = this.pendingForms.length + 1;
             for (let pendingForm of this.pendingForms) {
                 if (pendingForm.formData.uuid == this.currentForm.uuid) {
                     break;
@@ -179,25 +202,37 @@ export class FormPage {
                 this.save(index, pending_form_index);
             }
         }
-
-
-
     }
 
-    editForm(index) {
+    /*editForm(index) {
         this.currentForm.data = this.formData;
         this.forms[index] = this.currentForm;
         this.storage.set(this.templateUuid, this.forms);
-    }
+    }*/
 
-    saveCoordinates() {
-        this.currentForm.coordinates = this.coordinates;
-        let index = this.forms.length - 1;
+    saveCoordinates(formD, coordinates, index, pending_form_index) {
+        if(this.currentForm.versions.length == 0 || this.indexCurrentVersion>(this.currentForm.versions.length - 1)) {
+            let currentVersion = {};
+            let ver = this.currentForm.versions.length + 1;
+            let fecha = new Date();
+            currentVersion = {
+                saveDate: fecha,
+                version: ver,
+                data: formD,
+                coordinates: coordinates,
+                reason: this.reason
+            };
+            this.currentForm.versions.push(currentVersion);
+        } else {
+            this.currentForm.versions[this.indexCurrentVersion].saveDate = new Date();
+            this.currentForm.versions[this.indexCurrentVersion].data = formD;
+            this.currentForm.versions[this.indexCurrentVersion].coordinates = coordinates;
+            this.currentForm.versions[this.indexCurrentVersion].reason = this.reason;
+        }        
         this.forms[index] = this.currentForm;
         this.formsData[this.templateUuid] = this.forms;
         this.storage.set("formsData", this.formsData);
-
-        this.pendingForms[this.pendingForms.length - 1].formData = this.currentForm;
+        this.pendingForms[pending_form_index].formData = this.currentForm;
         this.storage.set("pendingForms", this.pendingForms);
     }
 
@@ -279,7 +314,6 @@ export class FormPage {
                 buttons: ["ok"]
             });
             alert.present();
-            console.log(err.message);
         }
     }
 
@@ -333,7 +367,7 @@ export class FormPage {
 
     blurFunction($event, functionName) {
         var valores = this.validateBlurFunction($event,functionName);
-        this.saveForm();
+        //this.saveForm();
         return valores;
     }
 
@@ -344,50 +378,4 @@ export class FormPage {
         this.saveForm();
     }
 
-    requestLocationAuthorization() {
-        this.diagnostic.requestLocationAuthorization().then(res => {
-            this.geolocationAuth = res;
-            this.locationAccuracy.canRequest().then((canRequest: boolean) => {
-                if (canRequest) {
-                    this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
-                        () => {
-                            this.loading = this.loadingController.create({
-                                content: 'Obteniendo ubicación ...',
-                            });
-                            this.loading.present();
-                            this.geolocation.getCurrentPosition({
-                                enableHighAccuracy: true,
-                                timeout: 12000
-                            }).then((res) => {
-                                this.geolocationAuth = "GRANTED";
-                                this.loading.dismiss();
-                                this.coordinates = {
-                                    latitude: res.coords.latitude,
-                                    longitude: res.coords.longitude
-                                };
-                                this.saveCoordinates();
-
-                            }).catch((error) => {
-                                this.loading.dismiss();
-                                console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
-                                let alert = this.alertCtrl.create({
-                                    title: "Error",
-                                    subTitle: "No pudimos acceder a tu ubicación.",
-                                    buttons: ["ok"]
-                                });
-                                alert.present();
-                            });
-                        }).catch(err => {
-                            this.geolocationAuth = "DENIED";
-                            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-                        }).catch(err => {
-                            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-                        });
-                }
-            }).catch(err => {
-                console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-            });
-        });
-
-    }
 }

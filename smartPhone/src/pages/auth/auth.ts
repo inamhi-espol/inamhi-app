@@ -18,7 +18,7 @@ export class AuthPage {
 
     user = { username: "", password: "" };
     url = "http://150.136.230.16/api/validate_user/";
-    urlFunctions = "http://150.136.213.20/dataset/0cfc0e05-8e4c-435a-893b-5d12ede68f0f/resource/d0173624-db8d-4487-929e-e69872e5c840/download/calculos.json";
+    urlFunctions = "http://150.136.213.20/dataset/5cf2b424-a092-4d55-b955-0d9f2942ed4f/resource/66356757-7019-41a0-8b2f-3e2c7618919a/download/calculos.json";
     linkedUser;
     infoTemplates = [];
 
@@ -44,12 +44,12 @@ export class AuthPage {
         }, err => {
             console.log('error no puede conectarse al servidor para descarga de calculos');
             console.log(err);
-            this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
+            /*this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
                 this.storage.set('calculos', res);
             }, err => {
                 console.log('Hubo un error al obtener los cálculos');
                 console.log(err);
-            });
+            });*/
         });
     }
 
@@ -84,11 +84,11 @@ export class AuthPage {
         } else {
             this.http.post(this.url, { username: this.user.username, password: this.user.password }, {})
                 .then(res => {
-                    const alert = this.alertCtrl.create({
+                    /*const alert = this.alertCtrl.create({
                         subTitle: JSON.parse(res.data).msg,
                         buttons: ['OK']
                     });
-                    alert.present();
+                    alert.present();*/
                     if (JSON.parse(res.data).uid != undefined) {
                         this.intelSecurity.data.createFromData({ data: this.user.password })
                             .then((instanceID: Number) => {
@@ -185,33 +185,14 @@ export class AuthPage {
 
     desvincular() {
         const confirm = this.alertCtrl.create({
-            title: 'Seguro que quieres ingresar con otra cuenta?',
-            message: 'Se borrara la cuenta registrada y podras registrarte de nuevo cuando inicies sesion con internet',
+            title: '¿Seguro que quieres ingresar con otra cuenta?',
+            message: 'Se borrará la cuenta registrada y deberá contar con concexión a internet para iniciar sesión',
             buttons: [
                 {
                     text: 'Iniciar con otra cuenta',
                     handler: () => {
                         console.log('Desvincular clicked');
                         this.storage.clear().then(() => {
-                            this.httpClient.get('./assets/plantilla/templates.json').subscribe(res => {
-                                this.storage.set('templates', res);
-                            }, err => {
-                                console.log('error no puede conectarse al servidor para descarga de plantilla');
-                                console.log(err);
-                            });
-                            this.httpClient.get(this.urlFunctions).subscribe(res => {
-                                this.storage.set('calculos', res);
-                            }, err => {
-                                console.log('error no puede conectarse al servidor para descarga de calculos');
-                                console.log(err);
-                                this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
-                                    this.storage.set('calculos', res);
-                                }, err => {
-                                    console.log('Hubo un error al obtener los cálculos');
-                                    console.log(err);
-                                }
-                                );
-                            });
                             this.linkedUser = null;
                             this.secureStorage.create('security')
                                 .then((storage: SecureStorageObject) => {

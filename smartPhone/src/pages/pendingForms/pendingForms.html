@@ -41,26 +41,20 @@
                     <div class="container">
                         <div padding-left padding-right class="row">
                             <div class="col-12">
-                                <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Creacion:</strong> {{form.formData.createdDate | date:'yyyy/MM/dd HH:mm:ss'}} </ion-label>
-                                <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Guardado:</strong> {{form.formData.saveDate |  date:'yyyy/MM/dd HH:mm:ss'}}</ion-label>
-                                <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Versión:</strong> {{ form.formData.version }}</ion-label>
-                                <ion-label *ngIf="form.formData.gps == 'required' && form.formData.coordinates " no-margin margin-bottom text-wrap><strong class="strongLabel">Ubicación:</strong> Lat. {{ form.formData.coordinates.latitude }}, Long.
-                                    {{ form.formData.coordinates.longitude }}</ion-label>
-                                <ion-label *ngIf="form.formData.gps == 'required' && form.formData.coordinates==null " no-margin margin-bottom text-wrap><strong class="strongLabel">Ubicación:</strong> No se pudo determinar</ion-label>
+                                <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Creación:</strong> {{form.formData.createdDate | date:'yyyy/MM/dd HH:mm:ss'}} </ion-label>
+                                <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Última actualización:</strong> {{form.formData.versions[form.formData.versions.length - 1].saveDate |  date:'yyyy/MM/dd HH:mm:ss'}}</ion-label>
+                                <ion-label *ngIf="form.formData.gps == 'required' && form.formData.versions[form.formData.versions.length - 1].coordinates " no-margin margin-bottom text-wrap><strong class="strongLabel">Última ubicación:</strong> Lat: {{ form.formData.versions[form.formData.versions.length - 1].coordinates.latitude }}, Long: {{ form.formData.versions[form.formData.versions.length - 1].coordinates.longitude }}</ion-label>
+                                <ion-label *ngIf="form.formData.gps == 'required' && form.formData.versions[form.formData.versions.length - 1].coordinates==null " no-margin margin-bottom text-wrap><strong class="strongLabel">Última ubicación:</strong> No se pudo determinar</ion-label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-6">
-                                <ion-label class="empty_number" no-margin margin-bottom text-wrap [class.strongLabelError]="form.formData.vacios>0"><strong [class.strongLabel]="!form.formData.vacios>0">Vacios: </strong> {{form.formData.vacios}}
-                                </ion-label>
                                 <button class='edit-button' [disabled]="sendingForms" ion-button block icon-start clear small (click)="clickEditForm(i)">
                                     <ion-icon class="edit-button-icon" name="create"></ion-icon>
                                     <div>Editar</div>
                                 </button>
                             </div>
                             <div class="col-6">
-                                <ion-label class="bugs_number" no-margin margin-bottom text-wrap [class.strongLabelError]="form.formData.errores>0"><strong [class.strongLabel]="!form.formData.errores>0">Errores:</strong> {{form.formData.errores}}
-                                </ion-label>
                                 <button class='delete-button' [disabled]="sendingForms" ion-button block icon-start clear small (click)="clickDeletePendingForm(form, i)">
                                     <ion-icon class="icon-trash" name="trash"></ion-icon>
                                     <div>Eliminar</div>

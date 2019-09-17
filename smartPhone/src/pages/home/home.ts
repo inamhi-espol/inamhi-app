@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { NavController, MenuController, Events, AlertController, Platform, LoadingController } from 'ionic-angular';
+import { NavController, MenuController, Events, AlertController, App, Platform, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
 import { DatePipe } from '@angular/common';
@@ -11,6 +11,7 @@ import { Coordinates, Geolocation } from '@ionic-native/geolocation';
 import { FormPage } from '../form/form';
 import { FollowUpPage } from '../followUp/followUp';
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { FormulariosPage } from '../formularios/formularios';
 import uuid from 'uuid/v4';
 
 @Component({
@@ -33,7 +34,7 @@ export class HomePage {
     linkedUser;
     notifications;
     id;
-    urlFunctions = "http://150.136.213.20/dataset/0cfc0e05-8e4c-435a-893b-5d12ede68f0f/resource/d0173624-db8d-4487-929e-e69872e5c840/download/calculos.json";
+    urlFunctions = "http://150.136.213.20/dataset/5cf2b424-a092-4d55-b955-0d9f2942ed4f/resource/66356757-7019-41a0-8b2f-3e2c7618919a/download/calculos.json";
 
     constructor(private diagnostic: Diagnostic,
         private events: Events,
@@ -46,9 +47,10 @@ export class HomePage {
         public loadingController: LoadingController,
         public navCtrl: NavController,
         public http: HTTP,
+        public appCtrl: App,
         public httpClient: HttpClient,
         private localNotifications: LocalNotifications) {
-
+        
         this.menuCtrl.enable(true);
 
         this.storage.get('sentForms').then((sentForms) => {
@@ -78,72 +80,14 @@ export class HomePage {
                 this.storage.set("templates", JSON.parse(res.data).templates);
             }).catch(error => {
                 console.log("error", error);
-
-                //loader.dismiss();
-                /*if (error.status == 403) {
-                    const alert = this.alertCtrl.create({
-                        subTitle: 'Hubo un problema de conexión. Intentelo más tarde',
-                        buttons: ['OK']
-                    });
-                    alert.present();
-                } else {
-                    const alert = this.alertCtrl.create({
-                        subTitle: 'Hubo un error',
-                        buttons: ['OK']
-                    });
-                    alert.present();
-                }*/
             });
         });
-
-        /*this.storage.get('templates').then((templates) => {
-            if(templates.name == "Nutrición") {
-                var url_calculos = "http://150.136.213.20/dataset/0cfc0e05-8e4c-435a-893b-5d12ede68f0f/resource/98c97425-d342-4aa7-9f8f-fe7f5df7dec4/download/calculos_nutricion.json";
-            } else if(templates.name == "INHAMI") {
-                var url_calculos = "http://150.136.213.20/dataset/5cf2b424-a092-4d55-b955-0d9f2942ed4f/resource/d1aadedb-295f-460b-b462-d069dc87b8d6/download/calculos_inhami.json";
-            }
-
-            this.http.get(url_calculos, {}, {})
-                .then(res => {
-                    this.storage.set('calculos', res);
-                })
-                .catch(error => {
-                    console.log("error", error);
-
-                    if (error.status == 403) {
-                        const alert = this.alertCtrl.create({
-                            subTitle: 'Hubo un problema de conexión. Intentelo más tarde',
-                            buttons: ['OK']
-                        });
-                        alert.present();
-                    }else if(error.status == 500){
-                      const alert = this.alertCtrl.create({
-                          subTitle: 'Lo sentimos, hubo un problema en el servidor. Intentelo más tarde',
-                          buttons: ['OK']
-                      });
-                      alert.present();
-                    }
-                    else {
-                        const alert = this.alertCtrl.create({
-                            subTitle: 'Usuario o contraseña incorrectos home',
-                            buttons: ['OK']
-                        });
-                        alert.present();
-                    }
-            });
-        });*/
 
         this.httpClient.get(this.urlFunctions).subscribe(res => {
             this.storage.set('calculos', res);
         }, err => {
             console.log('error no puede conectarse al servidor para descarga de calculos');
             console.log(err);
-            this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
-                this.storage.set('calculos', res);
-            }, err => {
-                console.log('Hubo un error al obtener los cálculos');
-                console.log(err);
-            });
         });
 
         this.storage.get("formsData").then((formsData) => {
@@ -153,13 +97,6 @@ export class HomePage {
         });
 
         this.setNotificaciones();
-    }
-
-    ionViewWillEnter(){
-        this.storage.get('infoTemplates').then((templates) => {
-          this.infoTemplates = templates;
-          this.selectedSection = templates[0];
-        });
     }
 
     getType(type) {
@@ -332,8 +269,7 @@ export class HomePage {
                     formsData: this.formsData,
                     pendingForms: this.pendingForms,
                     infoTemplates: this.infoTemplates,
-                    infoTemplateIndex: index,
-                    reason: reason
+                    infoTemplateIndex: index
                 });
             });
         } else {
@@ -359,34 +295,30 @@ export class HomePage {
                 let code_number = parseInt(form.code) + 1;
                 currentForm = {
                     uuid: formUuid,
-                    code: code,
-                    reason: reason,
-                    version: 0,
+                    code: "",
+                    versions: [],
                     type: type,
                     name: template.name,
                     gps: template.gps,
-                    data: {},
                     createdDate: new Date()
                 };
                 if (template.gps == "required") {
-                    currentForm["coordinates"] = this.coordinates;
+                    let coordinates = this.coordinates;
                 }
                 forms.push(currentForm);
             }
             else {
                 currentForm = {
                     uuid: formUuid,
-                    code: code,
-                    reason: reason,
-                    version: 0,
+                    code: "",
+                    versions: [],
                     type: type,
                     name: template.name,
                     gps: template.gps,
-                    data: {},
                     createdDate: new Date()
                 };
                 if (template.gps == "required") {
-                    currentForm["coordinates"] = this.coordinates;
+                    let coordinates = this.coordinates;
                 }
                 forms = [currentForm];
             }
@@ -413,18 +345,35 @@ export class HomePage {
                         index: 0
                     }];
                 }
-                this.navCtrl.push(FormPage, {
-                    template: template,
-                    selectedTemplate: selectedTemplate,
-                    formData: selectedTemplate,
-                    currentForm: currentForm,
-                    forms: forms,
-                    formsData: this.formsData,
-                    pendingForms: pendingForms,
-                    geolocationAuth: this.geolocationAuth,
-                    infoTemplates: this.infoTemplates,
-                    infoTemplateIndex: index
-                });
+                if (template.gps == "required") {
+                    this.navCtrl.push(FormPage, {
+                        template: template,
+                        selectedTemplate: selectedTemplate,
+                        formData: selectedTemplate,
+                        currentForm: currentForm,
+                        forms: forms,
+                        formsData: this.formsData,
+                        pendingForms: pendingForms,
+                        geolocationAuth: this.geolocationAuth,
+                        infoTemplates: this.infoTemplates,
+                        infoTemplateIndex: index,
+                        coordinates: this.coordinates,
+                        reason: reason
+                    });
+                } else {
+                    this.navCtrl.push(FormPage, {
+                        template: template,
+                        selectedTemplate: selectedTemplate,
+                        formData: selectedTemplate,
+                        currentForm: currentForm,
+                        forms: forms,
+                        formsData: this.formsData,
+                        pendingForms: pendingForms,
+                        geolocationAuth: this.geolocationAuth,
+                        infoTemplates: this.infoTemplates,
+                        infoTemplateIndex: index
+                    });
+                }
             });
         });
     }
@@ -441,19 +390,18 @@ export class HomePage {
             if (forms != null && (forms.length > 0)) {
                 let form = forms[forms.length - 1];
                 let code_number = parseInt(form.code) + 1;
+
                 currentForm = {
                     uuid: formUuid,
                     code: "",
-                    reason: reason,
-                    version: 0,
+                    versions: [],
                     type: type,
                     name: template.name,
                     gps: template.gps,
-                    data: {},
                     createdDate: new Date()
                 };
                 if (template.gps == "required") {
-                    currentForm["coordinates"] = this.coordinates;
+                    let coordinates = this.coordinates;
                 }
                 forms.push(currentForm);
             }
@@ -461,16 +409,14 @@ export class HomePage {
                 currentForm = {
                     uuid: formUuid,
                     code: "",
-                    reason: reason,
-                    version: 0,
+                    versions: [],
                     type: type,
                     name: template.name,
                     gps: template.gps,
-                    data: {},
                     createdDate: new Date()
                 };
                 if (template.gps == "required") {
-                    currentForm["coordinates"] = this.coordinates;
+                    let coordinates = this.coordinates;
                 }
                 forms = [currentForm];
             }
@@ -497,18 +443,37 @@ export class HomePage {
                         index: 0
                     }];
                 }
-                this.navCtrl.push(FormPage, {
-                    template: template,
-                    selectedTemplate: selectedTemplate,
-                    formData: selectedTemplate,
-                    currentForm: currentForm,
-                    forms: forms,
-                    formsData: this.formsData,
-                    pendingForms: pendingForms,
-                    geolocationAuth: this.geolocationAuth,
-                    infoTemplates: this.infoTemplates,
-                    infoTemplateIndex: index
-                });
+                if (template.gps == "required") {
+                    this.navCtrl.push(FormPage, {
+                        template: template,
+                        selectedTemplate: selectedTemplate,
+                        formData: selectedTemplate,
+                        currentForm: currentForm,
+                        forms: forms,
+                        formsData: this.formsData,
+                        pendingForms: pendingForms,
+                        geolocationAuth: this.geolocationAuth,
+                        infoTemplates: this.infoTemplates,
+                        infoTemplateIndex: index,
+                        coordinates: this.coordinates,
+                        reason: reason,
+                        indexCurrentVersion: 0
+                    });
+                } else {
+                    this.navCtrl.push(FormPage, {
+                        template: template,
+                        selectedTemplate: selectedTemplate,
+                        formData: selectedTemplate,
+                        currentForm: currentForm,
+                        forms: forms,
+                        formsData: this.formsData,
+                        pendingForms: pendingForms,
+                        geolocationAuth: this.geolocationAuth,
+                        infoTemplates: this.infoTemplates,
+                        infoTemplateIndex: index,
+                        indexCurrentVersion: 0
+                    });
+                }
             });
         });
     }
@@ -676,21 +641,20 @@ export class HomePage {
         }
     }
 
+    //TEMPLATE LINKEADO DE INFOTEMPLATE 
     async startForm(template, type, index) {
-        // Genereate an uuid for form
         let templateUuid = template.uuid;
-        this.storage.get('infoTemplates').then((templates) => {
-            for (let temp of templates) {
-                if (temp.uuid == template.uuid) {
-                    template = temp;
-                    break;
-                }
-            }
-            if (template.gps == "required") {
-                this.requestLocationAuthorization(template, templateUuid, type, index);
-            } else {
-                this.chooseFormTypeToInit(template, templateUuid, type, index, null)
-            }
-        });
+        template.data = JSON.parse(JSON.stringify(this.templates[index].data));
+
+        if (template.gps == "required") {
+            this.requestLocationAuthorization(template, templateUuid, type, index);
+        } else {
+            this.chooseFormTypeToInit(template, templateUuid, type, index, null)
+        }
     }
+
+    GoToPendingFormsList() {
+        this.appCtrl.getRootNav().setRoot(FormulariosPage);
+    }
+
 }

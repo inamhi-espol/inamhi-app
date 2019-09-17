@@ -17,8 +17,6 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { FormPage } from '../pages/form/form';
 import { FollowUpPage } from '../pages/followUp/followUp';
-import { AgregarFormularioPage } from '../pages/agregarFormulario/agregarFormulario';
-import { modalEditarFormularioPage } from '../pages/modalEditarFormulario/modalEditarFormulario';
 import { AuthPage } from '../pages/auth/auth';
 import { PerfilPage } from '../pages/perfil/perfil';
 import { SentFormsPage } from '../pages/sentForms/sentForms';
@@ -34,8 +32,6 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
     HomePage,
     FormPage,
     FollowUpPage,
-    AgregarFormularioPage,
-    modalEditarFormularioPage,
     AuthPage,
     PerfilPage,
     SentFormsPage,
@@ -56,8 +52,6 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
     HomePage,
     FormPage,
     FollowUpPage,
-    AgregarFormularioPage,
-    modalEditarFormularioPage,
     AuthPage,
     PerfilPage,
     SentFormsPage,

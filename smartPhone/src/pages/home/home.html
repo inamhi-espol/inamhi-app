@@ -26,7 +26,9 @@
                         <ion-label slot="end" class="label-rigth">{{ template.remain_quantity }}</ion-label>
                     </ion-item>
                 </ion-list>
-                <button *ngIf="template.remain_quantity != 0" ion-button size="small" (click)="startForm(template, template.type, i)">Empezar</button>
+                <button *ngIf="template.remain_quantity != 0" ion-button size="small" (click)="startForm(template, template.type, i)">NUEVO</button>
+                <br>
+                <button ion-button size="small" (click)="GoToPendingFormsList()">EDITAR</button>
             </ion-card-content>
 
             <ion-card-content *ngIf="template.type == 'COMPUESTA'">
@@ -47,7 +49,7 @@
                         <ion-label col-3 slot="end" *ngIf="!select_tipo_compuesta"></ion-label>
                     </ion-item>
                 </ion-list>
-                <button [disabled]="!select_tipo_compuesta" ion-button size="small" (click)="startForm(template, select_tipo_compuesta, i)">Empezar</button>
+                <button [disabled]="!select_tipo_compuesta" ion-button size="small" (click)="startForm(template, select_tipo_compuesta, i)">NUEVO</button>
             </ion-card-content>
 
             <ion-card-content *ngIf="template.type == 'MULTIFORM'">

@@ -128,10 +128,6 @@ export class MyApp {
                 let setId = pendingForm.setId;
                 let index = pendingForm.index;
                 let formData = pendingForm.formData;
-                console.log(linkedUser);
-                console.log(formData);
-                console.log(templateUuid);
-                console.log(setId);
                 let result = await this.promesaEnvioFormulario(linkedUser, formData, templateUuid, setId);
                 if (result['error']) {
                     this.sendingForms = false;
@@ -172,7 +168,7 @@ export class MyApp {
                 loading.dismiss();
                 this.sendingForms = false;
                 alert = this.alertCtrl.create({
-                    message: "Todas las formularios han sido correctamente enviadas",
+                    message: "Todos los formularios han sido correctamente enviados",
                     buttons: ["ok"]
                 });
                 alert.present();
