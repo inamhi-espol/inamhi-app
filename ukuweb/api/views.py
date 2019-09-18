@@ -60,6 +60,7 @@ def save_form_data_fields(form, data, input_time, versions):
     values_m = np.array(data["values"])
     cols_number = len(values_m[0, :])
     rows_number = len(values_m)
+
     time_interval = form.template.input_interval
     for j in range(cols_number):
         editions = 1
@@ -71,8 +72,9 @@ def save_form_data_fields(form, data, input_time, versions):
                 editions += 1
                 final_value = value
                 last_date = versions[i].saved_date
-        changed_values = list(set(filter(None, values_m[:, i])))
+        changed_values = list(set(filter(None, values_m[:, j])))
         initial_value = changed_values[0] if changed_values else None
+        final_value = changed_values[-1] if changed_values else None
         status = status_form_data_fields(
             datetime.strptime(input_time, "%H:%M"),
             data["saved_date"],
