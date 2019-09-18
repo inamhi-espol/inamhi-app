@@ -56,14 +56,23 @@ def convert_string_as_coordinate(coordinates):
     return None
 
 
-def save_form_data_fields(form, data, input_time):
+def save_form_data_fields(form, data, input_time, versions):
     values_m = np.array(data["values"])
     cols_number = len(values_m[0, :])
+    rows_number = len(values_m)
     time_interval = form.template.input_interval
-    for i in range(cols_number):
+    for j in range(cols_number):
+        editions = 1
+        final_value = values_m[0, j]
+        last_date = versions[0].saved_date
+        for i in range(rows_number):
+            value = values_m[i, j]
+            if final_value != value:
+                editions += 1
+                final_value = value
+                last_date = versions[i].saved_date
         changed_values = list(set(filter(None, values_m[:, i])))
         initial_value = changed_values[0] if changed_values else None
-        final_value = changed_values[-1] if changed_values else None
         status = status_form_data_fields(
             datetime.strptime(input_time, "%H:%M"),
             data["saved_date"],
@@ -79,8 +88,8 @@ def save_form_data_fields(form, data, input_time):
             saved_coordinate=data["saved_coordinates"],
             form_data=form,
             name=data["fields"][i],
-            save_date=data["saved_date"],
-            editions=len(changed_values),
+            save_date=last_date,
+            editions=editions,
             initial_value=initial_value,
             final_value=final_value,
             input_time=datetime.strptime(input_time, "%H:%M"),
@@ -111,7 +120,7 @@ def save_form_data_fields_from_form(form):
                 data[time_section]["saved_coordinates"] = v.coordinates
                 obj = api.get_obj_from_section(obj_version, time_section)
                 data[time_section]["values"].append(api.get_values_from_form(obj))
-            save_form_data_fields(form, data[time_section], time_section)
+            save_form_data_fields(form, data[time_section], time_section, versions)
 
 
 @api_view(["GET"])
