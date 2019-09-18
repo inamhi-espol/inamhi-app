@@ -63,8 +63,10 @@ def save_form_data_fields(form, data, input_time, versions):
 
     time_interval = form.template.input_interval
     for j in range(cols_number):
-        editions = 0
         final_value = values_m[0, j]
+        editions = 0
+        if final_value != "":
+            editions = 1
         last_date = versions[0].saved_date
         for i in range(rows_number):
             value = values_m[i, j]
