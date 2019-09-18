@@ -87,7 +87,7 @@ def save_form_data_fields(form, data, input_time, versions):
             ),
             saved_coordinate=data["saved_coordinates"],
             form_data=form,
-            name=data["fields"][i],
+            name=data["fields"][j],
             save_date=last_date,
             editions=editions,
             initial_value=initial_value,
