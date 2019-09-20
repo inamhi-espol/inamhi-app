@@ -78,18 +78,19 @@ export class PendingFormsPage {
       });
     }
 
-    decrease_done_quantity(template, formType) {
+    decrease_edition_quantity(template, formType) {
         if (formType == "SIMPLE") {
-            template.done_quantity -= 1;
+            template.edition_quantity -= 1;
         }
         else {
             for (let type of template.quantity) {
                 if (type.type == formType)
-                    type.done_quantity -= 1;
+                    type.edition_quantity -= 1;
             }
         }
         this.storage.set('infoTemplates', this.infoTemplates);
     }
+
 
     increase_remain_quantity(template, formType) {
         if (formType == "SIMPLE") {
@@ -121,7 +122,7 @@ export class PendingFormsPage {
         this.storage.set("pendingForms", this.pendingForms);
         for (let template of this.infoTemplates) {
             if (template.uuid == templateUuid) {
-                this.decrease_done_quantity(template, form.formData.type);
+                this.decrease_edition_quantity(template, form.formData.type);
                 this.increase_remain_quantity(template, form.formData.type);
             }
         }
@@ -197,17 +198,15 @@ export class PendingFormsPage {
             for (let form of forms){
               if(form.uuid == currentF.uuid){
                 currentForm = form;
-                //currentForm = JSON.parse(JSON.stringify(form));
                 break;
               }
             }
             let infoTemplates = await this.storage.get("infoTemplates");
-            for (let i = 0; i < infoTemplates.length; i++) {
-                let temp = infoTemplates[i];
+            for (let k = 0; k < infoTemplates.length; k++) {
+                let temp = infoTemplates[k];
                 if (temp.uuid == templateUuid) {
                     template = temp;
-                    //template = JSON.parse(JSON.stringify(temp));
-                    infoTemplateIndex = i;
+                    infoTemplateIndex = k;
                     break;
                 }
             }

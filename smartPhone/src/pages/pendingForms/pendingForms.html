@@ -9,7 +9,6 @@
         <ion-buttons end>
             <button *ngIf="!sendingForms" [disabled]="pendingForms.length==0" ion-button icon-end (click)="clickSendForms()">
                 Enviar
-                <ion-icon name="ios-send" class="icon-send"></ion-icon>
             </button>
             <button [disabled]="true" *ngIf="sendingForms" ion-button icon-end>
                 Enviando
@@ -29,19 +28,15 @@
                     <ion-avatar item-start>
                         <img src="assets/imgs/formulario4.png">
                     </ion-avatar>
-                    <h3>{{form.formData.name}}</h3>
-                    <p style="color: #1f8490" *ngIf="form.formData.code"> Identificación: {{form.formData.code}}</p>
-                    <p style="color: #1f8490" *ngIf="form.formData.type == 'initial'" no-margin margin-bottom text-wrap>Tipo: INICIAL</p>
-                    <p style="color: #1f8490" *ngIf="form.formData.type == 'follow_up'" no-margin margin-bottom text-wrap>Tipo: SEGUIMIENTO</p>
-                    <p style="color: #1f8490" *ngIf="form.formData.type != 'initial' && form.formData.type != 'follow_up'"  no-margin margin-bottom text-wrap>Tipo: {{form.formData.type}}</p>
-                    <ion-icon *ngIf="form.formData.errores>0 || form.formData.vacios>0" item-end color="navbar3" small name="warning" margin-right></ion-icon>
+                    <h3 style="margin-bottom: 9px">{{form.formData.name}}</h3>
+                    <h3 style="color: #1f8490" *ngIf="form.formData.code"> Identificación: {{form.formData.code}}</h3>
+                    <h3 no-margin text-wrap><strong class="strongLabel">Creación:</strong> {{form.formData.createdDate | date:'yyyy/MM/dd HH:mm:ss'}} </h3>
                     <ion-icon item-end ios="ios-more" md="md-more"></ion-icon>
                 </ion-item>
-                <div class="collapse" id="collapse{{i}}">
+                <div class="collapse" style="margin-top: 6px" id="collapse{{i}}">
                     <div class="container">
                         <div padding-left padding-right class="row">
                             <div class="col-12">
-                                <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Creación:</strong> {{form.formData.createdDate | date:'yyyy/MM/dd HH:mm:ss'}} </ion-label>
                                 <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Última actualización:</strong> {{form.formData.versions[form.formData.versions.length - 1].saveDate |  date:'yyyy/MM/dd HH:mm:ss'}}</ion-label>
                                 <ion-label *ngIf="form.formData.gps == 'required' && form.formData.versions[form.formData.versions.length - 1].coordinates " no-margin margin-bottom text-wrap><strong class="strongLabel">Última ubicación:</strong> Lat: {{ form.formData.versions[form.formData.versions.length - 1].coordinates.latitude }}, Long: {{ form.formData.versions[form.formData.versions.length - 1].coordinates.longitude }}</ion-label>
                                 <ion-label *ngIf="form.formData.gps == 'required' && form.formData.versions[form.formData.versions.length - 1].coordinates==null " no-margin margin-bottom text-wrap><strong class="strongLabel">Última ubicación:</strong> No se pudo determinar</ion-label>

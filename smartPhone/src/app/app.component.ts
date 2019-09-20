@@ -36,6 +36,7 @@ export class MyApp {
     observacionPage;
     fenomenosPage;
     sendingForms = false;
+    infoTemplates;
     urlServerEnvioFormulario = "http://150.136.230.16/api/send_form/";
     urlServerPlantilla = "http://150.136.230.16/api/templates/";
     urlServerCalculos = "http://150.136.230.16/api/validations/";
@@ -82,6 +83,44 @@ export class MyApp {
 
             });
     }
+
+    decrease_edition_quantity(templateUuid, formType) {
+        for(let i = 0; i < this.infoTemplates.length; i++) {
+            if(this.infoTemplates[i].uuid == templateUuid) {
+                let template = this.infoTemplates[i];
+                if (formType == "SIMPLE") {
+                    template.edition_quantity -= 1;
+                } else {
+                    for (let type of template.quantity) {
+                        if (type.type == formType)
+                            type.edition_quantity -= 1;
+                    }
+                }                
+                this.infoTemplates[i] = template;
+                this.storage.set('infoTemplates', this.infoTemplates);
+                break;
+            }
+        }
+    }
+
+    increase_sent_quantity(templateUuid, formType) {
+        for(let i = 0; i < this.infoTemplates.length; i++) {
+            if(this.infoTemplates[i].uuid == templateUuid) {
+                let template = this.infoTemplates[i]; 
+                if (formType == "SIMPLE") {
+                    template.sent_quantity += 1;
+                } else {
+                    for (let type of template.quantity) {
+                        if (type.type == formType)
+                            type.sent_quantity += 1;
+                    }
+                }
+                this.infoTemplates[i] = template;
+                this.storage.set('infoTemplates', this.infoTemplates);
+                break;
+            }
+        }
+    }    
 
     promesaEnvioFormulario(linkedUser, formulario, templateUuid, setId) {
         return new Promise((resolve, reject) => {
@@ -140,11 +179,12 @@ export class MyApp {
                     });
                     alert.present();
                     break;
-                }
-                else {
+                } else {
                     var formularioEnviado = {
                         sendDate: result["fechaEnvio"],
                         createdDate: result["responseData"]["created_date"],
+                        formUuid: pendingForm.formData.uuid,
+                        templateUuid: pendingForm.template,
                         name: result["responseData"]["name"],
                         code: result["responseData"]["code"],
                         type: result["responseData"]["type"],
@@ -157,6 +197,13 @@ export class MyApp {
                     else {
                         sentForms = [formularioEnviado];
                     }
+
+                    this.storage.get('infoTemplates').then((infoTemplates) => {
+                        this.infoTemplates = infoTemplates;
+                        this.increase_sent_quantity(templateUuid, formData.type);
+                        this.decrease_edition_quantity(templateUuid, formData.type);
+                    });
+
                     await this.storage.set("sentForms", sentForms);
                     //Delete pendingForm
                     pendingForms.shift();

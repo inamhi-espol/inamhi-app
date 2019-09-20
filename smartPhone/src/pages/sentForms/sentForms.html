@@ -8,8 +8,7 @@
         </ion-title>
         <ion-buttons end>
             <button *ngIf="!deletingSentForms" [disabled]="sentForms.length==0" ion-button icon-end (click)="clickDeleteSentForms()">
-                Eliminar
-                <ion-icon name="close" class="icon-close"></ion-icon>
+                ELIMINAR TODOS
             </button>
             <button [disabled]="true" *ngIf="deletingSentForms" ion-button icon-end>
                 Eliminando
@@ -25,21 +24,25 @@
                 <ion-avatar item-start>
                     <img src="assets/imgs/formulario4.png">
                 </ion-avatar>
-                <h3>{{sentForm.name}}</h3>
-                <p *ngIf="sentForm.code" style="color: #1f8490"> Código: {{sentForm.code}}</p>
+                <h3 style="margin-bottom: 9px">{{sentForm.name}}</h3>
+                <h3 no-margin text-wrap><strong class="strongLabel">Creación:</strong> {{sentForm.createdDate | date:'yyyy/MM/dd HH:mm:ss'}} </h3>
                 <ion-icon item-end ios="ios-more" md="md-more"></ion-icon>
             </ion-item>
-            <div class="collapse" id="collapseSentForm{{j}}">
+            <div class="collapse" style="margin-top: 6px" id="collapseSentForm{{j}}">
                 <div class="container">
                     <div padding-left padding-right class="row">
                         <div class="col-12">
-                            <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Creacion:</strong> {{sentForm.createdDate | date:'yyyy/MM/dd HH:mm:ss'}} </ion-label>
                             <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Enviado:</strong> {{sentForm.sendDate |  date:'yyyy/MM/dd HH:mm:ss'}}</ion-label>
-                            <ion-label no-margin margin-bottom text-wrap><strong class="strongLabel">Tipo:</strong> {{sentForm.type}}</ion-label>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-6">
+                            <button class='see-button' ion-button block icon-start clear small (click)="clickSeeForm(sentForm.templateUuid, sentForm.formUuid)">
+                                <ion-icon class="see-button-icon" name="eye"></ion-icon>
+                                <div>Ver</div>
+                            </button>
+                        </div>
+                        <div class="col-6">
                             <button class='delete-button' ion-button block icon-start clear small (click)="clickDeleteSentForm(j)">
                                 <ion-icon name="trash" class="icon-trash"></ion-icon>
                                 <div>Eliminar</div>

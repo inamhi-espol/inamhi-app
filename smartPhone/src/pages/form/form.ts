@@ -28,6 +28,7 @@ export class FormPage {
     reason;
     infoTemplateIndex;
     indexCurrentVersion;
+    timerId = null;
 
     @ViewChild(Navbar) navbarName: Navbar;
 
@@ -44,6 +45,7 @@ export class FormPage {
         public navCtrl: NavController,
         public platform: Platform,
         public viewCtrl: ViewController) {
+
         this.menuCtrl.enable(true);
         this.template = this.navParams.data.template;
         this.formData = this.navParams.data.formData;
@@ -59,18 +61,26 @@ export class FormPage {
             this.formsData = this.navParams.data.formsData;
         } else {
             this.storage.get("formsData").then((formsData) => {
-                if (formsData != null) {
+                if (formsData != null && this.indexCurrentVersion != -1) {
                     this.formsData = formsData;
+                    for(let form of this.formsData[this.template.uuid]) {
+                        if(form.uuid == this.currentForm.uuid) {
+                            //this.indexCurrentVersion = form.versions.length;
+                            //SI LA LONGITUD ES MAYOR o igual QUE EL INDICE NO HACER NADA
+                            //SI LA LONGITUD ES MENOR QUE EL INDICE, QUE EL INDICE SEA IGUAL A LA LONGITUD
+                            /*if(form.versions.length < this.indexCurrentVersion) {
+                                this.indexCurrentVersion = form.versions.length;
+                            }*/
+                            this.navParams.data.indexCurrentVersion = form.versions.length;
+                            this.indexCurrentVersion = form.versions.length;
+                        }
+                    }
                 }
             })
         }
         this.geolocationAuth = this.navParams.data.geolocationAuth;
         this.pendingForms = this.navParams.data.pendingForms;
         this.infoTemplates = this.navParams.data.infoTemplates;
-
-        /*this.infoTemplates[this.infoTemplateIndex] = this.template;
-        this.storage.set('infoTemplates', this.infoTemplates);*/
-
         this.storage.get('calculos').then((calculos) => {
             for (let calc of calculos.calculos) {
                 this.funciones[calc.name] = eval('var a;a=' + calc.structure);
@@ -78,46 +88,71 @@ export class FormPage {
         }).catch(error => {
             console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
         });
-
-        /*this.storage.get('templates').then((templates) => {
-            this.templates = templates;
-        });*/
     }
 
     ionViewDidEnter() {
         this.navbarName.backButtonClick = () => {
-            var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-checkbox, ion-select"));
-            var elementos = [];
-            var errores = 0;
+            if(this.indexCurrentVersion != -1) {
+                var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-checkbox, ion-select"));
+                var elementos = [];
+                var errores = 0;
 
-            for (var el of array) {
-                if (el.id) {
-                    elementos.push(el.id);
+                for (var el of array) {
+                    if (el.id) {
+                        elementos.push(el.id);
+                    }
                 }
-            }
 
-            var params = this.mappingParametros(elementos);
-            for (var pa of params) {
-                errores += this.validateBlurFunction("", pa.blurFunction);
-            }
-            if (errores == 0) {
+                var params = this.mappingParametros(elementos);
+                for (var pa of params) {
+                    errores += this.validateBlurFunction("", pa.blurFunction);
+                }
+                if (errores == 0) {
+                    this.navCtrl.pop();
+                }
+            } else {
                 this.navCtrl.pop();
             }
         }
+        this.restartTimeout();          
     }
 
-    increase_done_quantity(template, formType, index) {
+    ionViewWillLeave() {
+        if(this.indexCurrentVersion != -1) {
+            clearTimeout(this.timerId);
+        }
+    }
+
+    restartTimeout() {
+        if(this.indexCurrentVersion != -1) {
+            if(this.timerId != null) {
+                clearTimeout(this.timerId);
+            } 
+            this.timerId = setTimeout(() => {
+                this.timerId = null;
+                /*if(this.currentForm.versions.length > this.indexCurrentVersion) {
+                    this.indexCurrentVersion = this.indexCurrentVersion + 1;
+                }*/
+                if(this.currentForm.versions.length > this.indexCurrentVersion) {
+                    this.navParams.data.indexCurrentVersion = this.navParams.data.indexCurrentVersion + 1;
+                    this.indexCurrentVersion = this.navParams.data.indexCurrentVersion + 1;
+                }
+            }, 900000);
+        }
+    }  
+
+    increase_edition_quantity(template, formType, index) {
         if (formType == "SIMPLE") {
-            template.done_quantity += 1;
+            template.edition_quantity += 1;
         } else {
             for (let type of template.quantity) {
                 if (type.type == formType)
-                    type.done_quantity += 1;
+                    type.edition_quantity += 1;
             }
         }
         this.infoTemplates[index] = this.template;
         this.storage.set('infoTemplates', this.infoTemplates);
-    }
+    }   
 
     decrease_remain_quantity(template, formType, index) {
         if (formType == "SIMPLE") {
@@ -135,7 +170,6 @@ export class FormPage {
     //index: indice del formulario que estoy haciendo
     save(index, pending_form_index) {
         let formD = JSON.parse(JSON.stringify(this.formData));
-        //this.currentForm.versions[this.indexCurrentVersion].coordinates
         this.geolocation.getCurrentPosition({
             enableHighAccuracy: true,
             timeout: 12000
@@ -153,62 +187,56 @@ export class FormPage {
     }
 
     async saveForm() {
-        let formsDataIsNull = this.formsData == null;
-        let formDataExists = (this.formsData != null &&
-            this.formsData.hasOwnProperty(this.templateUuid));
-        let currentFormExists = false;
-        let pending_form_index = this.pendingForms.length - 1;
-        if (formsDataIsNull || !formDataExists) {
-            this.decrease_remain_quantity(this.template,
-                this.currentForm.type,
-                this.infoTemplateIndex);
-            this.increase_done_quantity(this.template,
-                this.currentForm.type,
-                this.infoTemplateIndex);
-            this.save(this.forms.length - 1, pending_form_index);
-        } else {
-            let index = 0;
-            //index = this.formsData[this.templateUuid].length;
-            for (let form of this.formsData[this.templateUuid]) {
-                if (form.uuid == this.currentForm.uuid) {
-                    currentFormExists = true;
-                    break;
-                } else {
-                    index += 1;
-                }
-            }
-            pending_form_index = 0;
-            //pending_form_index = this.pendingForms.length + 1;
-            for (let pendingForm of this.pendingForms) {
-                if (pendingForm.formData.uuid == this.currentForm.uuid) {
-                    break;
-                } else {
-                    pending_form_index += 1;
-                }
-            }
-
-            if (!currentFormExists) {
-                //CREATE
-                this.storage.set("pendingForms", this.pendingForms);
+        if(this.indexCurrentVersion != -1) {
+            let formsDataIsNull = this.formsData == null;
+            let formDataExists = (this.formsData != null &&
+                this.formsData.hasOwnProperty(this.templateUuid));
+            let currentFormExists = false;
+            let pending_form_index = this.pendingForms.length - 1;
+            if (formsDataIsNull || !formDataExists) {
                 this.decrease_remain_quantity(this.template,
                     this.currentForm.type,
                     this.infoTemplateIndex);
-                this.increase_done_quantity(this.template,
+                this.increase_edition_quantity(this.template,
                     this.currentForm.type,
                     this.infoTemplateIndex);
                 this.save(this.forms.length - 1, pending_form_index);
             } else {
-                //EDIT
-                this.save(index, pending_form_index);
+                let index = 0;
+                for (let form of this.formsData[this.templateUuid]) {
+                    if (form.uuid == this.currentForm.uuid) {
+                        currentFormExists = true;
+                        break;
+                    } else {
+                        index += 1;
+                    }
+                }
+                pending_form_index = 0;
+                for (let pendingForm of this.pendingForms) {
+                    if (pendingForm.formData.uuid == this.currentForm.uuid) {
+                        break;
+                    } else {
+                        pending_form_index += 1;
+                    }
+                }
+
+                if (!currentFormExists) {
+                    //CREATE
+                    this.storage.set("pendingForms", this.pendingForms);
+                    this.decrease_remain_quantity(this.template,
+                        this.currentForm.type,
+                        this.infoTemplateIndex);
+                    this.increase_edition_quantity(this.template,
+                        this.currentForm.type,
+                        this.infoTemplateIndex);
+                    this.save(this.forms.length - 1, pending_form_index);
+                } else {
+                    //EDIT
+                    this.save(index, pending_form_index);
+                }
             }
         }
     }
-
-    /*editForm(index) {
-        this.currentForm.data = this.formData;
-        this.forms[index] = this.currentForm;
-        this.storage.set(this.templateUuid, this.forms);
-    }*/
 
     saveCoordinates(formD, coordinates, index, pending_form_index) {
         if(this.currentForm.versions.length == 0 || this.indexCurrentVersion>(this.currentForm.versions.length - 1)) {
@@ -343,6 +371,7 @@ export class FormPage {
     clickNextPage(item2) {
         let param = this.navParams.data;
         param.selectedTemplate = item2;
+        //param.indexCurrentVersion = this.indexCurrentVersion;
         this.navCtrl.push(FormPage, param);
     }
 
@@ -366,16 +395,27 @@ export class FormPage {
     }
 
     blurFunction($event, functionName) {
-        var valores = this.validateBlurFunction($event,functionName);
-        //this.saveForm();
-        return valores;
+        if(this.indexCurrentVersion != -1) {
+            var valores = this.validateBlurFunction($event,functionName);
+            return valores;
+        }
+        return 0;
     }
 
     clickFunction($event, functionName) {
-        if (functionName) {
-            this.triggerFunction(functionName);
+        if(this.indexCurrentVersion != -1) {
+            if (functionName) {
+                this.triggerFunction(functionName);
+            }
+            this.saveForm();
         }
-        this.saveForm();
+    }
+
+    readOnly() {
+        if(this.indexCurrentVersion == -1) {
+            return 1;
+        }
+        return 0;
     }
 
 }

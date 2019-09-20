@@ -108,8 +108,10 @@ export class HomePage {
     }
 
     getQuantities(template, select, quantity) {
-        if (quantity == "done") {
-            return template.quantity.find(cantidad => cantidad.type === select).done_quantity;
+        if (quantity == "edition") {
+            return template.quantity.find(cantidad => cantidad.type === select).edition_quantity;
+        } else if (quantity == "sent") {
+            return template.quantity.find(cantidad => cantidad.type === select).sent_quantity;
         } else if (quantity == "remain") {
             return template.quantity.find(cantidad => cantidad.type === select).remain_quantity;
         }

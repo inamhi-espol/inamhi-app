@@ -44,12 +44,6 @@ export class AuthPage {
         }, err => {
             console.log('error no puede conectarse al servidor para descarga de calculos');
             console.log(err);
-            /*this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
-                this.storage.set('calculos', res);
-            }, err => {
-                console.log('Hubo un error al obtener los cálculos');
-                console.log(err);
-            });*/
         });
     }
 
@@ -84,11 +78,6 @@ export class AuthPage {
         } else {
             this.http.post(this.url, { username: this.user.username, password: this.user.password }, {})
                 .then(res => {
-                    /*const alert = this.alertCtrl.create({
-                        subTitle: JSON.parse(res.data).msg,
-                        buttons: ['OK']
-                    });
-                    alert.present();*/
                     if (JSON.parse(res.data).uid != undefined) {
                         this.intelSecurity.data.createFromData({ data: this.user.password })
                             .then((instanceID: Number) => {
@@ -156,7 +145,8 @@ export class AuthPage {
                         uuid: template.uid,
                         name: template.name,
                         type: template.type,
-                        done_quantity: 0,
+                        edition_quantity: 0,
+                        sent_quantity: 0,
                         gps: template.gps,
                         set_id: template.set_id,
                         remain_quantity: template.quantity,
@@ -165,7 +155,7 @@ export class AuthPage {
                 } else {
                     var quanti = [];
                     for (let key in template.data) {
-                        var q = { type: key, done_quantity: 0, remain_quantity: template.quantity };
+                        var q = { type: key, edition_quantity: 0, sent_quantity: 0, remain_quantity: template.quantity };
                         quanti.push(q);
                     }
                     this.infoTemplates.push({

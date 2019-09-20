@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, Events, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { DatePipe } from '@angular/common';
+import { FormPage } from '../form/form';
 
 @Component({
     selector: 'page-sentForms',
@@ -12,6 +13,7 @@ export class SentFormsPage {
     sentForms = [];
     arreglo = [];
     deletingSentForms = false;
+    formsData;
 
     constructor(public alertCtrl: AlertController,
         private events: Events,
@@ -27,6 +29,10 @@ export class SentFormsPage {
             if (!status) {
                 this.getSentForms();
             }
+        });
+
+        this.storage.get('formsData').then((formsData) => {
+            this.formsData = formsData;
         });
     }
 
@@ -55,12 +61,14 @@ export class SentFormsPage {
         this.sentForms.splice(index, 1);
         this.storage.set("sentForms", this.sentForms);
     }
+
     deleteSentForms() {
         this.deletingSentForms = true;
         this.sentForms = []
         this.storage.set("sentForms", this.sentForms);
         this.deletingSentForms = false;
     }
+
     clickDeleteSentForms() {
         const confirm = this.alertCtrl.create({
             message: '¿Seguro que quieres eliminar tus formularios enviados?',
@@ -89,4 +97,44 @@ export class SentFormsPage {
             buttonElement.getElementsByTagName('ion-icon')[0].setAttribute('class', 'icon icon-md ion-md-arrow-dropright item-icon');
         }
     }
+
+    clickSeeForm(templateUuid, formUuid) {
+        this.storage.get("infoTemplates").then((infoTemplates) => {
+            let template, selectedTemplate, currentForm;
+            for(let forminfo of infoTemplates) {
+                if(forminfo.uuid == templateUuid) {
+                    template = forminfo;
+                    break;
+                }
+            }    
+
+            let forms = this.formsData[templateUuid];
+            for (let form of forms){
+                if(form.uuid == formUuid){
+                    currentForm = form;
+                    break;
+                }
+            }       
+
+            template.data = JSON.parse(JSON.stringify(currentForm.versions[currentForm.versions.length - 1].data));
+            selectedTemplate = JSON.parse(JSON.stringify(currentForm.versions[currentForm.versions.length - 1].data));
+
+            this.navCtrl.push(FormPage, {
+                template: template,
+                selectedTemplate: selectedTemplate,
+                formData: null,
+                currentForm: null,
+                forms: null,
+                formsData: null,
+                pendingForms: null,
+                geolocationAuth: null,
+                infoTemplates: null,
+                infoTemplateIndex: null,
+                coordinates: null,
+                reason: null,
+                indexCurrentVersion: -1
+            });
+        })
+    }
+
 }
