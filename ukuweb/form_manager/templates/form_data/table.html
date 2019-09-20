@@ -50,7 +50,7 @@
               <td>{{ field.input_time|date:'H:i:s' }}</td>
               <td style="text-align: center;">{% if field.final_value %}{{ field.save_date|date:'H:i:s' }}{% else %} - {% endif %}</td>
               <td>{{ field.editions }}</td>
-              <td style="text-align: center;">{% if field.final_value %}{{ field.final_value }}{% else %} - {% endif %}</td>
+              <td style="text-align: center;">{% if field.initial_value %}{{ field.initial_value }}{% else %} - {% endif %}</td>
               <td style="text-align: center;">{% if field.final_value %}{{ field.final_value }}{% else %} - {% endif %}</td>
               <td>{{ field.get_defined_coordinate }}</td>
               <td style="text-align: center;">{% if field.final_value %}{{ field.get_saved_coordinate }}{% else %} - {% endif %}</td>
