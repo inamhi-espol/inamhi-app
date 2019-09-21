@@ -65,12 +65,6 @@ export class FormPage {
                     this.formsData = formsData;
                     for(let form of this.formsData[this.template.uuid]) {
                         if(form.uuid == this.currentForm.uuid) {
-                            //this.indexCurrentVersion = form.versions.length;
-                            //SI LA LONGITUD ES MAYOR o igual QUE EL INDICE NO HACER NADA
-                            //SI LA LONGITUD ES MENOR QUE EL INDICE, QUE EL INDICE SEA IGUAL A LA LONGITUD
-                            /*if(form.versions.length < this.indexCurrentVersion) {
-                                this.indexCurrentVersion = form.versions.length;
-                            }*/
                             this.navParams.data.indexCurrentVersion = form.versions.length;
                             this.indexCurrentVersion = form.versions.length;
                         }
@@ -130,14 +124,11 @@ export class FormPage {
             } 
             this.timerId = setTimeout(() => {
                 this.timerId = null;
-                /*if(this.currentForm.versions.length > this.indexCurrentVersion) {
-                    this.indexCurrentVersion = this.indexCurrentVersion + 1;
-                }*/
                 if(this.currentForm.versions.length > this.indexCurrentVersion) {
                     this.navParams.data.indexCurrentVersion = this.navParams.data.indexCurrentVersion + 1;
                     this.indexCurrentVersion = this.navParams.data.indexCurrentVersion + 1;
                 }
-            }, 900000);
+            }, 600000);
         }
     }  
 
